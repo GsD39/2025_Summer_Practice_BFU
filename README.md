@@ -3,8 +3,8 @@ Just a little piece of code for so-called "educational purposes"
 
 
 ## Structure of the project:
-
-├── backend/                     
+```txt
+├── backend/          
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── auth/
@@ -43,7 +43,7 @@ Just a little piece of code for so-called "educational purposes"
 │   └── vue.config.js
 ├── docker-compose.yml            
 └── README.md
-
+```
 
 
 
