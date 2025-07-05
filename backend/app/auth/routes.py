@@ -1,12 +1,24 @@
-from .services import AuthService
-
 from flask import Blueprint, request, jsonify
-from ..auth.models import User
-from ..auth.utils import admin_required, create_jwt_token
-from .. import db
+from flask_jwt_extended import get_jwt_identity
 
+from .. import db
+from ..auth.models import User
+from ..auth.utils import create_tokens, token_required, validate_token
 
 auth_bp = Blueprint('auth', __name__)
+
+
+@auth_bp.route('/logout', methods=['POST'])
+@token_required
+def logout():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+
+    if user:
+        user.refresh_token = None
+        db.session.commit()
+
+    return jsonify({'message': 'Successfully logged out'})
 
 
 @auth_bp.route('/login', methods=['POST'])
@@ -23,21 +35,45 @@ def login():
     if not user.is_active:
         return jsonify({'error': 'Account disabled'}), 403
 
-    # Генерируем токен
-    token = create_jwt_token(user.id, user.role)
+    access_token, refresh_token = create_tokens(user.id, user.role)
+
+    user.refresh_token = refresh_token
+    db.session.commit()
 
     return jsonify({
-        'message': 'Logged in successfully',
-        'token': token,  # Добавляем токен в ответ
-        'user': {
-            'id': user.id,
-            'email': user.email,
-            'role': user.role
-        }
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'expires_in': 3600
     }), 200
 
 
-@auth_bp.route('/register', methods=['POST'])
-def register():
-    # Только админ может регистрировать пользователей
-    return jsonify({'error': 'Registration allowed only via admin panel'}), 403
+@auth_bp.route('/refresh', methods=['POST'])
+def refresh():
+    refresh_token = request.json.get('refresh_token')
+    if not refresh_token:
+        return jsonify({'error': 'Refresh token required'}), 400
+
+    try:
+        payload = validate_token(refresh_token)
+        if payload['type'] != 'refresh':
+            return jsonify({'error': 'Invalid token type'}), 400
+
+        user = User.query.get(payload['sub'])
+        if not user or user.refresh_token != refresh_token:
+            return jsonify({'error': 'Invalid refresh token'}), 401
+
+        # Создаем новые токены
+        new_access, new_refresh = create_tokens(user.id, user.role)
+
+        # Обновляем refresh-токен в БД
+        user.refresh_token = new_refresh
+        db.session.commit()
+
+        return jsonify({
+            'access_token': new_access,
+            'refresh_token': new_refresh,
+            'expires_in': 900
+        })
+
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 401

@@ -1,8 +1,9 @@
 # 2025_Summer_Practice_BFU
+
 Just a little piece of code for so-called "educational purposes"
 
-
 ## Structure of the project:
+
 ```txt
 ├── backend/          
 │   ├── app/
@@ -45,9 +46,9 @@ Just a little piece of code for so-called "educational purposes"
 └── README.md
 ```
 
+# Frontend part setup
+=======
 
-
-# Frontend part
 
 ## Project Setup
 
