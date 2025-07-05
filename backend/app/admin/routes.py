@@ -66,7 +66,8 @@ def get_users():
         'id': user.id,
         'email': user.email,
         'role': user.role,
-        'is_active': user.is_active
+        'is_active': user.is_active,
+        'refresh_token': user.refresh_token
     } for user in users])
 
 
