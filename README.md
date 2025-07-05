@@ -9,10 +9,20 @@ Just a little piece of code for so-called "educational purposes"
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── auth/
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── routes.py
+│   │   │   ├── services.py
+│   │   │   └── utils.py
 │   │   ├── admin/
+│   │   │   ├── __init__.py
+│   │   │   └── routes.py
 │   │   ├── schedule/
-│   │   ├── static/               
-│   │   ├── utils/
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── routes.py
+│   │   │   ├── utils.py
+│   │   │   └── validators.py
 │   │   └── config.py
 │   ├── migrations/
 │   ├── requirements.txt
