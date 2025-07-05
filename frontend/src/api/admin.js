@@ -1,13 +1,14 @@
-import axios from 'axios'
-
 export default {
   getUsers() {
-    return axios.get('/admin/users')
+    return axios.get('/api/admin/users')
   },
-  updateUser(id, data) {
-    return axios.put(`/admin/users/${id}`, data)
+  createUser(userData) {
+    return axios.post('/api/admin/users', userData)
+  },
+  updateUser(id, userData) {
+    return axios.put(`/api/admin/users/${id}`, userData)
   },
   deleteUser(id) {
-    return axios.delete(`/admin/users/${id}`)
+    return axios.delete(`/api/admin/users/${id}`)
   }
 }

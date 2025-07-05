@@ -1,4 +1,3 @@
-// src/store/modules/schedule.js
 import scheduleApi from '@/api/schedule'
 import { format, addWeeks, startOfWeek, endOfWeek } from 'date-fns'
 

@@ -4,7 +4,7 @@ export default {
   namespaced: true,
   state: {
     user: null,
-    token: null
+    token: localStorage.getItem('token') || null
   },
   mutations: {
     SET_USER(state, user) {
@@ -12,6 +12,12 @@ export default {
     },
     SET_TOKEN(state, token) {
       state.token = token
+      localStorage.setItem('token', token)
+    },
+    CLEAR_AUTH(state) {
+      state.user = null
+      state.token = null
+      localStorage.removeItem('token')
     }
   },
   actions: {
@@ -20,27 +26,23 @@ export default {
       commit('SET_USER', response.data.user)
       commit('SET_TOKEN', response.data.token)
     },
-    async register({ commit }, userData) {
-      const response = await authApi.register(userData)
-      commit('SET_USER', response.data.user)
-      commit('SET_TOKEN', response.data.token)
-    },
     async logout({ commit }) {
       await authApi.logout()
-      commit('SET_USER', null)
-      commit('SET_TOKEN', null)
+      commit('CLEAR_AUTH')
     },
-    async fetchUser({ commit }) {
+    async fetchUser({ commit, state }) {
+      if (!state.token) return
+      
       try {
         const response = await authApi.getUser()
         commit('SET_USER', response.data)
       } catch (error) {
-        commit('SET_USER', null)
+        commit('CLEAR_AUTH')
       }
     }
   },
   getters: {
-    isAuthenticated: state => !!state.user,
+    isAuthenticated: state => !!state.token,
     isAdmin: state => state.user?.role === 'admin',
     currentUser: state => state.user
   }

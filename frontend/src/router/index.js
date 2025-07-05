@@ -65,30 +65,16 @@ const router = createRouter({
   }
 })
 
-// Navigation guard for authentication
-router.beforeEach(async (to, from, next) => {
-  // Set page title
-  document.title = to.meta.title 
-    ? `${to.meta.title} | University Schedule` 
-    : 'University Schedule'
-  
-  // Check authentication status
+
+
+router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated']
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
-  const guestOnly = to.matched.some(record => record.meta.guestOnly)
+  const isAdmin = store.getters['auth/isAdmin']
   
-  // if (requiresAuth && !isAuthenticated) {
-  if (requiresAuth && isAuthenticated) {
-    next({
-      path: '/auth',
-      query: { redirect: to.fullPath }
-    })
-  } else if (guestOnly && isAuthenticated) {
-    next('/schedule')
-  // } else if (requiresAdmin && !store.getters['auth/isAdmin']) {
-  } else if (requiresAdmin && store.getters['auth/isAdmin']) {
-    next('/schedule')
+  if (to.meta.requiresAdmin && !isAdmin) {
+    next('/schedule') // Redirect non-admins away from admin routes
+  } else if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/auth') // Redirect unauthenticated users to login
   } else {
     next()
   }

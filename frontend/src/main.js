@@ -25,31 +25,19 @@ app.config.errorHandler = (err, vm, info) => {
 // Mount the application
 app.mount('#app')
 
-// Global progress indicator for API calls
+// src/main.js
 axios.interceptors.request.use(config => {
-  store.commit('setLoading', true)
+  const token = store.state.auth.token
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 
-axios.interceptors.response.use(response => {
-  store.commit('setLoading', false)
-  return response
-}, error => {
-  store.commit('setLoading', false)
-  
-  // Handle common error cases
-  if (error.response) {
-    const { status } = error.response
-    
-    if (status === 401) {
-      // Unauthorized - redirect to login
-      store.commit('auth/logout')
-      router.push({ path: '/auth', query: { redirect: router.currentRoute.value.fullPath } })
-    } else if (status === 403) {
-      // Forbidden - show access denied
-      alert('You do not have permission to access this resource')
-    }
+axios.interceptors.response.use(response => response, error => {
+  if (error.response?.status === 401) {
+    store.dispatch('auth/logout')
+    router.push('/auth')
   }
-  
   return Promise.reject(error)
 })
