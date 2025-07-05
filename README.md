@@ -25,6 +25,7 @@ Just a little piece of code for so-called "educational purposes"
 │   │   │   └── validators.py
 │   │   └── config.py
 │   ├── migrations/
+│   ├── Dockerfile
 │   ├── requirements.txt
 │   ├── .env
 │   └── wsgi.py
