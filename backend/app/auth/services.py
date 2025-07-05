@@ -6,7 +6,7 @@ class AuthService:
     @staticmethod
     def register_user(email, password, role):
         if User.query.filter_by(email=email).first():
-            return None  # Пользователь уже существует
+            return None
 
         new_user = User(email=email)
         new_user.set_password(password)
