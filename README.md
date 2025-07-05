@@ -47,8 +47,18 @@ Just a little piece of code for so-called "educational purposes"
 ```
 
 # Frontend part setup
+=======
+
 
 ## Project Setup
+
+### Changing working directory to frontend part
+
+```sh
+cd frontend
+```
+
+### Installing dependencies
 
 ```sh
 npm install
@@ -71,3 +81,6 @@ npm run build
 ```sh
 npm run test:unit
 ```
+
+
+## [Description](frontend/DESCRIPTION.md)
