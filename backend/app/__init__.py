@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 from flask_cors import CORS
 
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -35,8 +34,6 @@ def create_app() -> Flask:
     # Инициализация расширений
     db.init_app(app)
     migrate.init_app(app, db)
-    cache.init_app(app)
-
 
 
     # Регистрация blueprint'ов
