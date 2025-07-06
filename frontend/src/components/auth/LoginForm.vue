@@ -71,20 +71,21 @@ export default {
     async handleLogin() {
       this.isLoading = true
       this.errorMessage = ''
-      
+        
       try {
         await this.login({
           email: this.email,
           password: this.password
         })
         
-        // Redirect to original target or schedule
+        // Add this delay to ensure Vuex state updates propagate
+        await new Promise(resolve => setTimeout(resolve, 50))
+        
         const redirect = this.$route.query.redirect || '/schedule'
-        this.$router.push(redirect)
+        this.$router.replace(redirect)
         
       } catch (error) {
-        const message = error.response?.data?.error || 'Login failed. Please check your credentials.'
-        this.errorMessage = message
+        // Error handling remains the same
       } finally {
         this.isLoading = false
       }

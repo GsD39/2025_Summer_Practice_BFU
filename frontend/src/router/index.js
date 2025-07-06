@@ -4,29 +4,44 @@ import store from '@/store'
 const routes = [
   {
     path: '/',
-    redirect: '/schedule'
+    redirect: { name: 'Schedule' }
   },
   {
     path: '/auth',
     name: 'Auth',
     component: () => import('@/views/AuthView.vue'),
-    meta: { guestOnly: true }
+    meta: { 
+      title: 'Login or Register',
+      guestOnly: true,
+      hideNav: true
+    }
   },
   {
     path: '/schedule',
     name: 'Schedule',
     component: () => import('@/views/ScheduleView.vue'),
-    meta: { requiresAuth: true }
+    meta: { 
+      title: 'Class Schedule',
+      requiresAuth: true
+    }
   },
   {
     path: '/admin',
     name: 'Admin',
     component: () => import('@/views/AdminView.vue'),
-    meta: { requiresAdmin: true }
+    meta: { 
+      title: 'Admin Panel',
+      requiresAuth: true,
+      requiresAdmin: true
+    }
   },
   {
     path: '/:pathMatch(.*)*',
-    component: () => import('@/views/NotFound.vue')
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue'),
+    meta: { 
+      title: 'Page Not Found'
+    }
   }
 ]
 
@@ -35,24 +50,32 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = store.getters['auth/isAuthenticated']
-  const isAdmin = store.getters['auth/isAdmin']
-  
-  if (isAuthenticated && !store.state.auth.user) {
-    try {
-      await store.dispatch('auth/fetchUser')
-    } catch (error) {
-      console.error('User fetch error:', error)
-    }
+function getAuthStatus() {
+  return {
+    isAuthenticated: store.getters['auth/isAuthenticated'],
+    isAdmin: store.getters['auth/isAdmin']
   }
+}
+
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
+  const guestOnly = to.matched.some(record => record.meta.guestOnly)
   
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  const { isAuthenticated, isAdmin } = getAuthStatus()
+  
+  console.log('[Router] Navigating to:', to.name)
+  console.log('[Router] isAuthenticated:', isAuthenticated)
+  console.log('[Router] requiresAuth:', requiresAuth)
+  console.log('[Router] guestOnly:', guestOnly)
+  console.log('[Router] requiresAdmin:', requiresAdmin)
+
+  if (requiresAuth && !isAuthenticated) {
     next({ name: 'Auth', query: { redirect: to.fullPath } })
-  } else if (to.meta.requiresAdmin && !isAdmin) {
-    next({ name: 'Schedule' })
-  } else if (to.meta.guestOnly && isAuthenticated) {
-    next({ name: 'Schedule' })
+  } else if (requiresAdmin && !isAdmin) {
+    next({ name: 'Forbidden' }) // Create this route
+  } else if (guestOnly && isAuthenticated) {
+    next({ name: 'Home' }) // Redirect to home if logged in
   } else {
     next()
   }

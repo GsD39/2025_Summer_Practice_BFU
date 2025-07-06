@@ -11,12 +11,8 @@ export default {
       state.user = user
     },
     SET_TOKEN(state, token) {
-      state.token = token
-      if (token) {
-        localStorage.setItem('token', token)
-      } else {
-        localStorage.removeItem('token')
-      }
+      state.token = token;
+      localStorage.setItem('token', token);
     },
     CLEAR_AUTH(state) {
       state.user = null

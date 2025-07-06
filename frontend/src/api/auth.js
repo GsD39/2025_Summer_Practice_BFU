@@ -10,7 +10,10 @@ const apiClient = axios.create({
 
 export default {
   login(credentials) {
-    return apiClient.post('/auth/login', credentials)
+    return apiClient.post('/auth/login', {
+      email: credentials.email,
+      password: credentials.password
+    })
   },
   logout() {
     return apiClient.post('/auth/logout')

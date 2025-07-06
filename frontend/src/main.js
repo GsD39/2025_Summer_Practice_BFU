@@ -32,8 +32,10 @@ axios.interceptors.response.use(response => response, error => {
   return Promise.reject(error)
 })
 
-app.mount('#app')
-
 if (localStorage.getItem('token')) {
   store.dispatch('auth/fetchUser')
 }
+
+router.isReady().then(() => {
+  app.mount('#app')
+})

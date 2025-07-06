@@ -15,6 +15,7 @@ frontend/
 │   ├── components/
 │   │   ├── __tests__/
 │   │   ├── admin/
+|   │   |    ├── ScheduleEditor.vue
 │   │   |    ├── ScheduleEditor.vue
 │   │   |    └── UserManagement.vue
 │   │   ├── auth/
