@@ -12,7 +12,11 @@ export default {
     },
     SET_TOKEN(state, token) {
       state.token = token
-      localStorage.setItem('token', token)
+      if (token) {
+        localStorage.setItem('token', token)
+      } else {
+        localStorage.removeItem('token')
+      }
     },
     CLEAR_AUTH(state) {
       state.user = null
@@ -21,15 +25,27 @@ export default {
     }
   },
   actions: {
-    async login({ commit }, credentials) {
-      const response = await authApi.login(credentials)
-      commit('SET_USER', response.data.user)
-      commit('SET_TOKEN', response.data.token)
+    async login({ commit, dispatch }, credentials) {
+      try {
+        const response = await authApi.login(credentials)
+        commit('SET_TOKEN', response.data.token)
+        commit('SET_USER', response.data.user)
+        return response.data
+      } catch (error) {
+        commit('CLEAR_AUTH')
+        throw error
+      }
     },
+    
     async logout({ commit }) {
-      await authApi.logout()
+      try {
+        await authApi.logout()
+      } catch (error) {
+        console.error('Logout API error:', error)
+      }
       commit('CLEAR_AUTH')
     },
+    
     async fetchUser({ commit, state }) {
       if (!state.token) return
       
@@ -38,6 +54,7 @@ export default {
         commit('SET_USER', response.data)
       } catch (error) {
         commit('CLEAR_AUTH')
+        throw error
       }
     }
   },

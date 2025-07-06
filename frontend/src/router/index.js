@@ -1,14 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 
-const baseUrl = import.meta.env.BASE_URL || '/'
-
-
-const AuthView = () => import('@/views/AuthView.vue')
-const ScheduleView = () => import('@/views/ScheduleView.vue')
-const AdminView = () => import('@/views/AdminView.vue')
-const NotFound = () => import('@/views/NotFound.vue')
-
 const routes = [
   {
     path: '/',
@@ -17,62 +9,50 @@ const routes = [
   {
     path: '/auth',
     name: 'Auth',
-    component: AuthView,
-    meta: {
-      title: 'Login or Register',
-      guestOnly: true,
-      hideNav: true
-    }
+    component: () => import('@/views/AuthView.vue'),
+    meta: { guestOnly: true }
   },
   {
     path: '/schedule',
     name: 'Schedule',
-    component: ScheduleView,
-    meta: {
-      title: 'Class Schedule',
-      requiresAuth: true
-    }
+    component: () => import('@/views/ScheduleView.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin',
     name: 'Admin',
-    component: AdminView,
-    meta: {
-      title: 'Admin Panel',
-      requiresAuth: true,
-      requiresAdmin: true
-    }
+    component: () => import('@/views/AdminView.vue'),
+    meta: { requiresAdmin: true }
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: NotFound,
-    meta: {
-      title: 'Page Not Found'
-    }
+    component: () => import('@/views/NotFound.vue')
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(baseUrl),
-  routes,
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { top: 0 }
-    }
-  }
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
 })
 
-
-
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated']
   const isAdmin = store.getters['auth/isAdmin']
   
-  if ((to.meta.requiresAuth && !isAuthenticated) || (to.meta.requiresAdmin && !isAdmin)) {
+  if (isAuthenticated && !store.state.auth.user) {
+    try {
+      await store.dispatch('auth/fetchUser')
+    } catch (error) {
+      console.error('User fetch error:', error)
+    }
+  }
+  
+  if (to.meta.requiresAuth && !isAuthenticated) {
     next({ name: 'Auth', query: { redirect: to.fullPath } })
+  } else if (to.meta.requiresAdmin && !isAdmin) {
+    next({ name: 'Schedule' })
+  } else if (to.meta.guestOnly && isAuthenticated) {
+    next({ name: 'Schedule' })
   } else {
     next()
   }
