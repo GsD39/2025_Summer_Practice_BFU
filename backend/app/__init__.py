@@ -26,6 +26,8 @@ def create_app():
     migrate.init_app(app, db)
     cache.init_app(app)
 
+
+
     # Регистрация blueprint'ов
     from .auth.routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -33,5 +35,6 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     from .schedule.routes import schedule_bp
     app.register_blueprint(schedule_bp, url_prefix='/api/schedule')
+
 
     return app

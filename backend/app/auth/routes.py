@@ -2,10 +2,29 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 
 from .. import db
+import os
 from ..auth.models import User
 from ..auth.utils import create_tokens, token_required, validate_token
 
 auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.route('/startup', methods=['POST'])
+def startup():
+    user = User.query.first()
+    if user is None:
+        default_admin_email = os.getenv('DEFAULT_ADMIN_EMAIL')
+        default_admin_password = os.getenv('DEFAULT_ADMIN_PASSWORD')
+        admin = User(
+            email=default_admin_email,
+            role="admin",
+            is_active=True
+        )
+        admin.set_password(default_admin_password)
+        db.session.add(admin)
+        db.session.commit()
+        return 200
+    else:
+        return jsonify({'error': 'default admin was already set'}), 403
 
 
 @auth_bp.route('/logout', methods=['POST'])
