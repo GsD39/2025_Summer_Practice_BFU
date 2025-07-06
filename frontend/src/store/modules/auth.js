@@ -34,7 +34,7 @@ export default {
         return response.data
       } catch (error) {
         commit('CLEAR_AUTH')
-        throw error
+        return error       //TODO Doesn't show error to user
       }
     },
     
@@ -42,9 +42,14 @@ export default {
       try {
         await authApi.logout()
       } catch (error) {
-        console.error('Logout API error:', error)
+        if (error.response?.status === 401) {
+          console.warn('Logout with expired token')
+        } else {
+          console.error('Logout API error:', error)
+        }
+      } finally {
+        commit('CLEAR_AUTH')
       }
-      commit('CLEAR_AUTH')
     },
     
     async fetchUser({ commit, state }) {

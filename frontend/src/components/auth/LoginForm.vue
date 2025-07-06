@@ -75,7 +75,8 @@ export default {
       try {
         await this.login({
           email: this.email,
-          password: this.password
+          password: this.password,
+          errorMessage: this.error
         })
         
         // Add this delay to ensure Vuex state updates propagate

@@ -82,7 +82,7 @@
           </button>
         </div>
         
-        <form @submit.prevent="createUser">
+        <form @submit.prevent="submitCreateUser">
           <div class="form-group">
             <label>Email *</label>
             <input v-model="newUser.email" type="email" required>
@@ -161,7 +161,7 @@
         
         <div class="modal-actions">
           <button @click="closeBatchForm">Cancel</button>
-          <button @click="createUsersBatch" :disabled="isBatchCreating">
+          <button @click="submitCreateUsersBatch" :disabled="isBatchCreating">
             {{ isBatchCreating ? 'Creating...' : 'Create Users' }}
           </button>
         </div>
@@ -182,7 +182,7 @@
         
         <div class="modal-actions">
           <button @click="userToDelete = null">Cancel</button>
-          <button @click="deleteUser" class="delete-btn" :disabled="isDeleting">
+          <button @click="submitDeleteUser" class="delete-btn" :disabled="isDeleting">
             <i class="fas fa-trash"></i> 
             {{ isDeleting ? 'Deleting...' : 'Delete User' }}
           </button>
@@ -242,7 +242,7 @@ export default {
       
       const query = this.searchQuery.toLowerCase()
       this.filteredUsers = this.users.filter(user => 
-        user.email.toLowerCase().includes(query)
+        user.email.toLowerCase().includes(query))
     },
     
     updateUserRole(user) {
@@ -263,7 +263,7 @@ export default {
       this.userToDelete = user
     },
     
-    async deleteUser() {
+    async submitCreateUser() {
       if (!this.userToDelete) return
       
       this.isDeleting = true
@@ -287,7 +287,7 @@ export default {
       this.showPassword = false
     },
     
-    async createUser() {
+    async submitCreateUser() {
       this.isCreating = true
       try {
         await this.createUser({...this.newUser})
@@ -305,7 +305,7 @@ export default {
       this.batchError = ''
     },
     
-    async createUsersBatch() {
+    async submitCreateUsersBatch() {
       this.batchError = ''
       this.isBatchCreating = true
       

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
 from flask_cors import cross_origin
 
-ORIGIN = 'http://localhost:3000'
+ORIGIN = 'http://localhost:3000' #TODO
 
 from .. import db
 import os
