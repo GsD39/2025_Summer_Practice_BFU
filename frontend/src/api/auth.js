@@ -1,17 +1,21 @@
 import axios from 'axios'
 
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, 
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 export default {
   login(credentials) {
-    return axios.post('/auth/login', {
-      email: credentials.email,
-      password: credentials.password
-    })
+    return apiClient.post('/auth/login', credentials)
   },
   logout() {
-    return axios.post('/auth/logout')
+    return apiClient.post('/auth/logout')
   },
   getUser() {
-    return axios.get('/auth/user')
+    return apiClient.get('/auth/user')
   }
 }

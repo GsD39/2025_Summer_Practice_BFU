@@ -5,6 +5,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
+from flask_cors import CORS
 
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 
@@ -12,9 +13,19 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     load_dotenv()
+
+    # Конфигурация CORS
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": "http://localhost:3000",
+            "allow_headers": ["Authorization", "Content-Type"],
+            "methods": ["GET", "POST", "PUT", "DELETE"],
+            "supports_credentials": True
+        }
+    })
 
     # Конфигурация
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')

@@ -1,5 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity
+from flask_cors import cross_origin
+
+ORIGIN = 'http://localhost:3000'
 
 from .. import db
 import os
@@ -28,6 +31,7 @@ def startup():
 
 
 @auth_bp.route('/logout', methods=['POST'])
+@cross_origin(origin=ORIGIN, supports_credentials=True)
 @token_required
 def logout():
     user_id = get_jwt_identity()
@@ -41,6 +45,7 @@ def logout():
 
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(origin=ORIGIN, supports_credentials=True)
 def login():
     data = request.get_json()
     if not data or 'email' not in data or 'password' not in data:
@@ -67,6 +72,7 @@ def login():
 
 
 @auth_bp.route('/refresh', methods=['POST'])
+@cross_origin(origin=ORIGIN, supports_credentials=True)
 def refresh():
     refresh_token = request.json.get('refresh_token')
     if not refresh_token:
