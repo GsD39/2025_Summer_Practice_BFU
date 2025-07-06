@@ -1,31 +1,33 @@
 import axios from 'axios'
 
 export default {
-  getSchedule() {
-    return axios.get('/schedule')
+  getGroupSchedule(groupName, date = null) {
+    const params = date ? { date } : {}
+    return axios.get(`/api/schedule/group/${groupName}`, { params })
   },
   
-  getWeekSchedule(weekOffset) {
-    return axios.get(`/schedule/week?offset=${weekOffset}`)
-  },
-  
-  getGroups() {
-    return axios.get('/schedule/groups')
-  },
-  
-  getTeachers() {
-    return axios.get('/schedule/teachers')
+  getTeacherSchedule(teacherName, date = null) {
+    const params = date ? { date } : {}
+    return axios.get(`/api/schedule/teacher/${teacherName}`, { params })
   },
   
   createLecture(lectureData) {
-    return axios.post('/schedule', lectureData)
+    return axios.post('/api/schedule/', lectureData)
   },
-  
-  updateLecture(lectureId, updateData) {
-    return axios.put(`/schedule/${lectureId}`, updateData)
+  createLecturesBatch(lectures) {
+    return axios.post('/api/schedule/batch', lectures)
   },
-  
+  getAllLectures() {
+    return axios.get('/api/schedule/admin/all')
+  },
   deleteLecture(lectureId) {
-    return axios.delete(`/schedule/${lectureId}`)
+    return axios.delete(`/api/schedule/${lectureId}`)
+  },
+  
+  getGroups() {
+    return axios.get('/api/schedule/groups')
+  },
+  getTeachers() {
+    return axios.get('/api/schedule/teachers')
   }
 }

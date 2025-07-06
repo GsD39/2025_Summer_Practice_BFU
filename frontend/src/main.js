@@ -12,20 +12,17 @@ axios.defaults.withCredentials = true
 // Create Vue application
 const app = createApp(App)
 
-// Use plugins
 app.use(store)
 app.use(router)
 
 // Global error handler
 app.config.errorHandler = (err, vm, info) => {
   console.error(`Vue error: ${err.toString()}\nInfo: ${info}`)
-  // You could also send this to an error tracking service
 }
 
 // Mount the application
 app.mount('#app')
 
-// src/main.js
 axios.interceptors.request.use(config => {
   const token = store.state.auth.token
   if (token) {
@@ -36,8 +33,10 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(response => response, error => {
   if (error.response?.status === 401) {
-    store.dispatch('auth/logout')
-    router.push('/auth')
+    if (!router.currentRoute.value.meta.guestOnly) {
+      store.commit('auth/CLEAR_AUTH')
+      router.push({ name: 'Auth' })
+    }
   }
   return Promise.reject(error)
 })

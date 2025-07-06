@@ -1,0 +1,64 @@
+Авторизация
+POST http://localhost:5000/api/auth/login email="admin@mail.ru" password="1234" Логин
+POST http://localhost:5000/api/auth/logout Authorization:"Bearer <token>" Выход
+POST http://localhost:5000/api/auth/refresh Authorization:"Bearer <token>" Обновление токена при активности
+
+Админка
+POST http://localhost:5000/api/admin/users Authorization:"Bearer <admin_token>" email="teacher@example.com" password="TeacherPass123!" role="teacher"
+Внедрение нового юзверя
+POST http://localhost:5000/api/admin/users/batch "Authorization: Bearer <admin_token>" Content-Type:application/json < users_batch.json
+Внедрение юзверей батчем. Вот содержимое users_batch.json. Его можно передавать и в самом запросе, как параметр
+[
+    {
+        "email": "student8@example.com",
+        "password": "Pass123!",
+        "role": "student"
+    },
+    {
+        "email": "admin8@example.com",
+        "password": "AdminPass123!",
+        "role": "admin"
+    }
+]
+PUT http://localhost:5000/api/admin/users/<id> "Authorization: Bearer <admin_token>" email="teacher1@example.com" password="TeacherPass123!" role="teacher"
+Обновление данных о юзвере. Если что-то не передано, то заполнит из старых данных
+DELETE http://localhost:5000/api/admin/users/<id>  "Authorization: Bearer <admin_token>"
+Удаление юзверя
+GET http://localhost:5000/api/admin/users/ "Authorization: Bearer <admin_token>"
+Получения списка всех юзверей
+
+Шедулька
+GET http://localhost:5000/api/schedule/group/<group_name> Authorization:"Bearer <token>" date="YYYY-MM-DD"
+Получение расписания группы на конкретную дату. Если дата не указана, возвращается за всю текущую неделю. Тока щас понял, что протупил, и нужно по идее и произвольную неделю тоже получать, но пусть будет...
+GET http://localhost:5000/api/schedule/teacher/<teacher_name> Authorization:"Bearer <token>" date="YYYY-MM-DD"
+То же самое, но для учителей. По идее надо дописать еще получение всех учителей, но вроде список всех пользователей получить можно, а значит и учителей из него можно достать. Правда тогда нужно еще ФИО в бд хранить...
+POST http://localhost:5000/api/schedule/ Authorization:"Bearer <admin_token>" 
+Одиночное создание занятия
+POST http://localhost:5000/api/schedule/batch/ Authorization:"Bearer <admin_token>" Content-Type:application/json < subj_batch.json
+Тут пример батча, для одиночного создания те же параметры. 
+[
+    {
+        "group": "CS-101",
+        "subject": "Database Systems",
+        "teacher": "Ivanov",
+        "room": "A-305",
+        "day": "Saturday",
+        "start_time": "09:00",
+        "end_time": "10:30",
+        "week_type": "lower"
+    },
+    {
+        "group": "CS-101",
+        "subject": "Algorithms",
+        "teacher": "Petrova",
+        "room": "B-202",
+        "day": "Sunday",
+        "start_time": "11:00",
+        "end_time": "12:30",
+        "week_type": "lower"
+    }
+] 
+GET http://localhost:5000/api/schedule/admin/all Authorization:"Bearer <admin_token>" 
+Получение всех пар в расписании. Звучит тупо, но я так сделал.
+DELETE http://localhost:5000/api/schedule/<int:schedule_id> Authorization:"Bearer <admin_token>"
+Удаление пары по ее id в бд. Соответственно id получить серез метод GET admin/all

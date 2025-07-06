@@ -71,10 +71,8 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated']
   const isAdmin = store.getters['auth/isAdmin']
   
-  if (to.meta.requiresAdmin && !isAdmin) {
-    next('/schedule') // Redirect non-admins away from admin routes
-  } else if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/auth') // Redirect unauthenticated users to login
+  if ((to.meta.requiresAuth && !isAuthenticated) || (to.meta.requiresAdmin && !isAdmin)) {
+    next({ name: 'Auth', query: { redirect: to.fullPath } })
   } else {
     next()
   }

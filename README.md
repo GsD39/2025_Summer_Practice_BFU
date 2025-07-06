@@ -57,6 +57,25 @@ Just a little piece of code for so-called "educational purposes"
 └── README.md
 ```
 
+
+
+# Backend part setup
+=======
+
+
+## Project Setup
+
+You should run this commands from the root directory of the project:
+
+```sh
+docker-compose up -d --build
+docker-compose exec web flask db init
+docker-compose exec web flask db migrate -m "update"
+docker-compose exec web flask db upgrade
+```
+
+
+
 # Frontend part setup
 =======
 

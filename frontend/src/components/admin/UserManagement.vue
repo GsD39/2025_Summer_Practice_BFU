@@ -2,59 +2,82 @@
   <div class="user-management">
     <div class="header">
       <h2>User Management</h2>
-      <button @click="showCreateForm = true">
-        <i class="fas fa-plus"></i> Add User
-      </button>
+      <div class="actions">
+        <button class="add-btn" @click="showCreateForm = true">
+          <i class="fas fa-plus"></i> Add User
+        </button>
+        <button class="batch-btn" @click="showBatchForm = true">
+          <i class="fas fa-users"></i> Batch Create
+        </button>
+      </div>
     </div>
 
-    <table v-if="users.length">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.id }}</td>
-          <td>{{ user.email }}</td>
-          <td>
-            <select v-model="user.role" @change="updateUserRole(user)">
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
-            </select>
-          </td>
-          <td>
-            <label class="switch">
-              <input 
-                type="checkbox" 
-                :checked="user.is_active" 
-                @change="toggleUserStatus(user)"
-              >
-              <span class="slider"></span>
-            </label>
-          </td>
-          <td>
-            <button @click="confirmDelete(user)" class="delete-btn">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <p v-else>No users found</p>
+    <div class="search-bar">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        placeholder="Search by email..." 
+        @input="filterUsers"
+      >
+      <i class="fas fa-search"></i>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in filteredUsers" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <select v-model="user.role" @change="updateUserRole(user)">
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="admin">Admin</option>
+              </select>
+            </td>
+            <td>
+              <label class="switch">
+                <input 
+                  type="checkbox" 
+                  :checked="user.is_active" 
+                  @change="toggleUserStatus(user)"
+                >
+                <span class="slider"></span>
+                <span class="status-text">
+                  {{ user.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </label>
+            </td>
+            <td>
+              <button @click="confirmDelete(user)" class="delete-btn">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div v-if="filteredUsers.length === 0" class="empty-state">
+        <i class="fas fa-user-slash"></i>
+        <p>No users found</p>
+      </div>
+    </div>
 
     <!-- Create User Modal -->
     <div v-if="showCreateForm" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
           <h3>Create New User</h3>
-          <button @click="showCreateForm = false">
+          <button @click="closeCreateForm">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -67,7 +90,16 @@
           
           <div class="form-group">
             <label>Password *</label>
-            <input v-model="newUser.password" type="password" required>
+            <div class="password-input">
+              <input 
+                v-model="newUser.password" 
+                :type="showPassword ? 'text' : 'password'" 
+                required
+              >
+              <button type="button" class="toggle-password" @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              </button>
+            </div>
           </div>
           
           <div class="form-group">
@@ -80,10 +112,59 @@
           </div>
           
           <div class="form-actions">
-            <button type="button" @click="showCreateForm = false">Cancel</button>
-            <button type="submit">Create User</button>
+            <button type="button" @click="closeCreateForm">Cancel</button>
+            <button type="submit" :disabled="isCreating">
+              {{ isCreating ? 'Creating...' : 'Create User' }}
+            </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Batch Create Modal -->
+    <div v-if="showBatchForm" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Batch Create Users</h3>
+          <button @click="closeBatchForm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="instructions">
+            <p>Enter user data in JSON format:</p>
+            <pre>[
+  {
+    "email": "user1@example.com",
+    "password": "Pass123!",
+    "role": "student"
+  },
+  {
+    "email": "user2@example.com",
+    "password": "Pass456!",
+    "role": "teacher"
+  }
+]</pre>
+          </div>
+          
+          <textarea 
+            v-model="batchUsersJson" 
+            placeholder="Paste JSON array of users..."
+            class="json-input"
+          ></textarea>
+          
+          <div v-if="batchError" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> {{ batchError }}
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button @click="closeBatchForm">Cancel</button>
+          <button @click="createUsersBatch" :disabled="isBatchCreating">
+            {{ isBatchCreating ? 'Creating...' : 'Create Users' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -96,12 +177,15 @@
         
         <div class="modal-body">
           <p>Are you sure you want to delete user <strong>{{ userToDelete.email }}</strong>?</p>
-          <p>This action cannot be undone.</p>
+          <p class="warning">This action cannot be undone.</p>
         </div>
         
         <div class="modal-actions">
           <button @click="userToDelete = null">Cancel</button>
-          <button @click="deleteUser" class="delete-btn">Delete User</button>
+          <button @click="deleteUser" class="delete-btn" :disabled="isDeleting">
+            <i class="fas fa-trash"></i> 
+            {{ isDeleting ? 'Deleting...' : 'Delete User' }}
+          </button>
         </div>
       </div>
     </div>
@@ -112,25 +196,54 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
+  name: 'UserManagement',
   data() {
     return {
       showCreateForm: false,
+      showBatchForm: false,
       userToDelete: null,
+      searchQuery: '',
+      filteredUsers: [],
       newUser: {
         email: '',
         password: '',
         role: 'student'
-      }
+      },
+      batchUsersJson: '',
+      showPassword: false,
+      isCreating: false,
+      isBatchCreating: false,
+      isDeleting: false,
+      batchError: ''
     }
   },
   computed: {
-    ...mapState('admin', ['users'])
+    ...mapState('admin', ['users', 'isLoading', 'error'])
+  },
+  watch: {
+    users: {
+      immediate: true,
+      handler(newUsers) {
+        this.filteredUsers = [...newUsers]
+      }
+    }
   },
   created() {
     this.fetchUsers()
   },
   methods: {
-    ...mapActions('admin', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser']),
+    ...mapActions('admin', ['fetchUsers', 'createUser', 'updateUser', 'deleteUser', 'createUsersBatch']),
+    
+    filterUsers() {
+      if (!this.searchQuery) {
+        this.filteredUsers = [...this.users]
+        return
+      }
+      
+      const query = this.searchQuery.toLowerCase()
+      this.filteredUsers = this.users.filter(user => 
+        user.email.toLowerCase().includes(query)
+    },
     
     updateUserRole(user) {
       this.updateUser({
@@ -151,23 +264,84 @@ export default {
     },
     
     async deleteUser() {
-      if (this.userToDelete) {
+      if (!this.userToDelete) return
+      
+      this.isDeleting = true
+      try {
         await this.deleteUser(this.userToDelete.id)
         this.userToDelete = null
+      } catch (error) {
+        console.error('Delete failed:', error)
+      } finally {
+        this.isDeleting = false
       }
     },
     
+    closeCreateForm() {
+      this.showCreateForm = false
+      this.newUser = {
+        email: '',
+        password: '',
+        role: 'student'
+      }
+      this.showPassword = false
+    },
+    
     async createUser() {
+      this.isCreating = true
       try {
-        await this.createUser(this.newUser)
-        this.showCreateForm = false
-        this.newUser = {
-          email: '',
-          password: '',
-          role: 'student'
-        }
+        await this.createUser({...this.newUser})
+        this.closeCreateForm()
       } catch (error) {
-        alert('Failed to create user: ' + error.message)
+        console.error('Create failed:', error)
+      } finally {
+        this.isCreating = false
+      }
+    },
+    
+    closeBatchForm() {
+      this.showBatchForm = false
+      this.batchUsersJson = ''
+      this.batchError = ''
+    },
+    
+    async createUsersBatch() {
+      this.batchError = ''
+      this.isBatchCreating = true
+      
+      try {
+        // Parse JSON input
+        const users = JSON.parse(this.batchUsersJson)
+        
+        // Validate input
+        if (!Array.isArray(users)) {
+          throw new Error('Input must be a JSON array')
+        }
+        
+        if (users.length === 0) {
+          throw new Error('No users provided')
+        }
+        
+        // Validate each user
+        for (const user of users) {
+          if (!user.email || !user.password || !user.role) {
+            throw new Error('Each user must have email, password, and role')
+          }
+          
+          if (!['student', 'teacher', 'admin'].includes(user.role)) {
+            throw new Error(`Invalid role: ${user.role}`)
+          }
+        }
+        
+        // Create users
+        await this.createUsersBatch(users)
+        this.closeBatchForm()
+        this.fetchUsers() // Refresh user list
+        
+      } catch (error) {
+        this.batchError = error.message
+      } finally {
+        this.isBatchCreating = false
       }
     }
   }
@@ -176,7 +350,10 @@ export default {
 
 <style scoped>
 .user-management {
-  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .header {
@@ -184,6 +361,76 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.header h2 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.add-btn, .batch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.add-btn {
+  background: #3498db;
+  color: white;
+}
+
+.add-btn:hover {
+  background: #2980b9;
+}
+
+.batch-btn {
+  background: #2ecc71;
+  color: white;
+}
+
+.batch-btn:hover {
+  background: #27ae60;
+}
+
+.search-bar {
+  position: relative;
+  margin-bottom: 20px;
+  max-width: 300px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 15px 10px 35px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.search-bar .fa-search {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7f8c8d;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  min-height: 300px;
 }
 
 table {
@@ -194,16 +441,29 @@ table {
 th, td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #eee;
 }
 
 th {
   background-color: #f8f9fa;
   font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #eee;
+}
+
+tr {
+  border-bottom: 1px solid #eee;
 }
 
 tr:hover {
   background-color: #f8f9fa;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  width: 100%;
 }
 
 .switch {
@@ -251,14 +511,41 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+.status-text {
+  margin-left: 60px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
 .delete-btn {
   background: none;
   border: none;
-  color: #dc3545;
+  color: #e74c3c;
   cursor: pointer;
   font-size: 1.2rem;
+  transition: color 0.3s;
 }
 
+.delete-btn:hover {
+  color: #c0392b;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  color: #bdc3c7;
+}
+
+/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -278,6 +565,7 @@ input:checked + .slider:before {
   max-width: 500px;
   border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
@@ -289,15 +577,169 @@ input:checked + .slider:before {
   align-items: center;
 }
 
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
 .modal-body {
   padding: 20px;
 }
 
-.modal-actions {
-  padding: 15px 20px;
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group input, 
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.password-input {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  cursor: pointer;
+}
+
+.form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
+  margin-top: 15px;
+}
+
+.form-actions button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.form-actions button:first-child {
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.form-actions button:last-child {
+  background: #3498db;
+  color: white;
+}
+
+.instructions {
+  margin-bottom: 15px;
+}
+
+.instructions pre {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.json-input {
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  background: #fce4e2;
+  color: #e74c3c;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.warning {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+}
+
+.modal-actions button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-actions button:first-child {
+  background: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.modal-actions .delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .add-btn, .batch-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  th, td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
 }
 </style>
