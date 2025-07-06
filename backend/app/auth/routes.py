@@ -22,7 +22,7 @@ def startup():
         admin.set_password(default_admin_password)
         db.session.add(admin)
         db.session.commit()
-        return 200
+        return jsonify({'ok': 'default admin has been set'}), 200
     else:
         return jsonify({'error': 'default admin was already set'}), 403
 

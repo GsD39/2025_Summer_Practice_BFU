@@ -58,7 +58,7 @@ def create_users_batch():
         return jsonify({'error': f'{str(e)}'}), 500
 
 
-@admin_bp.route('/users', methods=['GET'])
+@admin_bp.route('/users/all', methods=['GET'])
 @admin_required
 def get_users():
     users = User.query.all()
@@ -120,8 +120,11 @@ def update_user(user_id):
         user.role = User.ROLES[data['role']]
     if 'is_active' in data:
         user.is_active = data['is_active']
-
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': f'{str(e)}'}), 400
     return jsonify({'message': 'User updated successfully'})
 
 

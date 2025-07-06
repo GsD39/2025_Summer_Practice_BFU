@@ -4,9 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_caching import Cache
 
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -24,8 +22,6 @@ def create_app():
     # Инициализация расширений
     db.init_app(app)
     migrate.init_app(app, db)
-    cache.init_app(app)
-
 
 
     # Регистрация blueprint'ов
