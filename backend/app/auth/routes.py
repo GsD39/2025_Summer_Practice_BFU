@@ -67,6 +67,7 @@ def login():
     return jsonify({
         'access_token': access_token,
         'refresh_token': refresh_token,
+        'role': user.role,
         'expires_in': 3600
     }), 200
 

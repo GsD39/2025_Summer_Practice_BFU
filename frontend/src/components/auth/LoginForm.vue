@@ -82,6 +82,7 @@ export default {
         await new Promise(resolve => setTimeout(resolve, 50))
         
         const redirect = this.$route.query.redirect || '/schedule'
+        console.log(redirect)
         this.$router.replace(redirect)
         
       } catch (error) {

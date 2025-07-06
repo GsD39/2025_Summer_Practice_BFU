@@ -46,7 +46,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
@@ -60,22 +60,18 @@ function getAuthStatus() {
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
-  const guestOnly = to.matched.some(record => record.meta.guestOnly)
   
   const { isAuthenticated, isAdmin } = getAuthStatus()
   
   console.log('[Router] Navigating to:', to.name)
   console.log('[Router] isAuthenticated:', isAuthenticated)
   console.log('[Router] requiresAuth:', requiresAuth)
-  console.log('[Router] guestOnly:', guestOnly)
   console.log('[Router] requiresAdmin:', requiresAdmin)
 
   if (requiresAuth && !isAuthenticated) {
     next({ name: 'Auth', query: { redirect: to.fullPath } })
   } else if (requiresAdmin && !isAdmin) {
-    next({ name: 'Forbidden' }) // Create this route
-  } else if (guestOnly && isAuthenticated) {
-    next({ name: 'Home' }) // Redirect to home if logged in
+    next({ name: 'Forbidden' })
   } else {
     next()
   }

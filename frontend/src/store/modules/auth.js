@@ -7,15 +7,17 @@ export default {
     token: localStorage.getItem('token') || null
   },
   mutations: {
-    SET_USER(state, user) {
-      state.user = user
+    SET_ROLE(state, role) {
+      state.role = role
+      console.log(state.role === 'admin')
     },
     SET_TOKEN(state, token) {
       state.token = token;
+      console.log(!!state.token)
       localStorage.setItem('token', token);
     },
     CLEAR_AUTH(state) {
-      state.user = null
+      state.role = null
       state.token = null
       localStorage.removeItem('token')
     }
@@ -24,8 +26,11 @@ export default {
     async login({ commit, dispatch }, credentials) {
       try {
         const response = await authApi.login(credentials)
-        commit('SET_TOKEN', response.data.token)
-        commit('SET_USER', response.data.user)
+        console.log(response.data)
+        console.log(response.data.access_token)
+        console.log(response.data.role)
+        commit('SET_TOKEN', response.data.access_token)
+        commit('SET_ROLE', response.data.role)
         return response.data
       } catch (error) {
         commit('CLEAR_AUTH')
@@ -47,7 +52,7 @@ export default {
       
       try {
         const response = await authApi.getUser()
-        commit('SET_USER', response.data)
+        commit('SET_ROLE', response.data)
       } catch (error) {
         commit('CLEAR_AUTH')
         throw error
@@ -56,7 +61,6 @@ export default {
   },
   getters: {
     isAuthenticated: state => !!state.token,
-    isAdmin: state => state.user?.role === 'admin',
-    currentUser: state => state.user
+    isAdmin: state => state.role === 'admin',
   }
 }

@@ -37,5 +37,11 @@ if (localStorage.getItem('token')) {
 }
 
 router.isReady().then(() => {
-  app.mount('#app')
+  if (localStorage.getItem('token')) {
+    store.dispatch('auth/fetchUser').then(() => {
+      app.mount('#app')
+    })
+  } else {
+    app.mount('#app')
+  }
 })

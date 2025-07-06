@@ -14,7 +14,6 @@
         
         <div class="auth-actions">
           <template v-if="isAuthenticated">
-            <span class="user-email">{{ currentUser.email }}</span>
             <button @click="logout" class="logout-btn">
               <i class="fas fa-sign-out-alt"></i> Logout
             </button>
@@ -41,7 +40,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'isAdmin', 'currentUser'])
+    ...mapGetters('auth', ['isAuthenticated', 'isAdmin'])
   },
   methods: {
     ...mapActions('auth', ['logout']),
