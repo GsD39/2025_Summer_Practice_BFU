@@ -20,7 +20,6 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(store)
 
-// Инициализация токена при старте
 const savedToken = localStorage.getItem('token')
 if (savedToken) {
   setAuthToken(savedToken)

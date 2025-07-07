@@ -95,6 +95,8 @@ docker-compose exec web flask db migrate -m "update"
 docker-compose exec web flask db upgrade
 ```
 
+It is important to send a POST request to 'api/auth/startup' endpoint right after the first start.
+
 
 
 # Frontend part setup
