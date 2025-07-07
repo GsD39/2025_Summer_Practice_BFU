@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import ScheduleFilter from '@/components/schedule/ScheduleFilter.vue'
 import ScheduleTable from '@/components/schedule/ScheduleTable.vue'
 
@@ -38,13 +38,13 @@ export default {
   },
   computed: {
     ...mapState('schedule', ['schedule', 'groups', 'teachers', 'isLoading', 'error']),
-    ...mapGetters('auth', ['isAdmin'])
   },
   methods: {
     ...mapActions('schedule', [
       'fetchGroupSchedule',
       'fetchTeacherSchedule',
-      'createLecture'
+      'fetchGroups',
+      'fetchTeachers'
     ]),
     
     handleFilterChange(filter) {
@@ -70,19 +70,12 @@ export default {
       } catch (error) {
         console.error('Failed to load schedule:', error)
       }
-    },
-    
-    async handleSaveLecture(lectureData) {
-      try {
-        await this.createLecture(lectureData)
-        this.showLectureForm = false
-        this.loadSchedule()
-      } catch (error) {
-        console.error('Failed to save lecture:', error)
-      }
     }
   },
-  created() {
+  async created() {
+    await this.fetchGroups();
+    await this.fetchTeachers();
+
     if (this.$route.query.group) {
       this.filter.type = 'group'
       this.filter.value = this.$route.query.group

@@ -18,19 +18,17 @@
         > By Teacher
       </label>
       
-      <!-- Group selector -->
       <select 
         v-if="filterType === 'group'" 
         v-model="selectedGroup"
         @change="handleFilterChange"
       >
         <option value="">Select Group</option>
-        <option v-for="group in groups" :key="group" :value="group">
+        <option v-for="group in groups">
           {{ group }}
         </option>
       </select>
       
-      <!-- Teacher selector -->
       <select 
         v-else 
         v-model="selectedTeacher"
@@ -42,7 +40,6 @@
         </option>
       </select>
       
-      <!-- Date selector -->
       <input 
         type="date" 
         v-model="selectedDate"
