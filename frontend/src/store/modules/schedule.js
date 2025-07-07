@@ -31,6 +31,7 @@ export default {
     },
     SET_SCHEDULE(state, schedule) {
       state.schedule = schedule
+      console.log("fricking schedule once again:", state.schedule, schedule)
     },
     SET_LOADING(state, isLoading) {
       state.isLoading = isLoading

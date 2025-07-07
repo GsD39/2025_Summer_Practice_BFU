@@ -1,15 +1,13 @@
 <template>
-  <div class="lecture-item" :class="{ 'empty': !lecture }">
-    <div v-if="lecture" class="lecture-content">
+  <div v-if="lecture" class="lecture-item">
+    <div class="lecture-content">
       <div class="subject">{{ lecture.subject }}</div>
+      <div class="group">{{ lecture.group }}</div>
       <div class="details">
-        <span class="group">{{ lecture.group }}</span>
         <span class="teacher">{{ lecture.teacher }}</span>
         <span class="room">{{ lecture.room }}</span>
       </div>
-      <div v-if="lecture.week_type" class="week-type">
-        {{ formatWeekType(lecture.week_type) }}
-      </div>
+      <div class="week-type">{{ formatWeekType(lecture.week_type) }}</div>
     </div>
   </div>
 </template>
@@ -38,17 +36,11 @@ export default {
 
 <style scoped>
 .lecture-item {
-  min-height: 80px;
-  padding: 8px;
-  border-radius: 4px;
+  height: 100%;
+  padding: 10px;
   background-color: #e3f2fd;
   border-left: 3px solid #2196f3;
-  transition: all 0.2s ease;
-}
-
-.lecture-item.empty {
-  background-color: transparent;
-  border-left: 3px solid transparent;
+  border-radius: 4px;
 }
 
 .lecture-content {
@@ -59,29 +51,41 @@ export default {
 
 .subject {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   margin-bottom: 5px;
   color: #1565c0;
 }
 
+.group {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
 .details {
+  margin-top: auto;
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  justify-content: space-between;
   font-size: 0.8rem;
   color: #555;
 }
 
-.details > span {
-  background-color: #e1f5fe;
+.teacher {
+  font-weight: 500;
+}
+
+.room {
+  background-color: #bbdefb;
+  color: #0d47a1;
   padding: 2px 6px;
   border-radius: 3px;
+  font-weight: bold;
 }
 
 .week-type {
-  margin-top: auto;
   font-size: 0.75rem;
   color: #7e57c2;
   font-style: italic;
+  margin-top: 5px;
 }
 </style>

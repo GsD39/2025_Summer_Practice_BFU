@@ -10,13 +10,7 @@
     <div v-if="isLoading" class="loading">Loading schedule...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     
-    <ScheduleTable v-else :schedule="schedule" />
-    
-    <!-- <div v-if="isAdmin" class="admin-controls">
-      <button @click="showLectureForm = true">
-        <i class="fas fa-plus"></i> Add Lecture
-      </button>
-    </div> -->
+    <ScheduleTable v-else :schedule="formattedSchedule" />
   </div>
 </template>
 
@@ -38,6 +32,23 @@ export default {
   },
   computed: {
     ...mapState('schedule', ['schedule', 'groups', 'teachers', 'isLoading', 'error']),
+    
+    formattedSchedule() {
+      // Transform backend data into weekly schedule format
+      console.log("schedule:::", this.schedule)
+      if (!this.schedule) return [];
+      
+      return this.schedule.map(lecture => ({
+        id: lecture.id,
+        subject: lecture.subject,
+        group: lecture.group,
+        teacher: lecture.teacher,
+        room: lecture.room,
+        day: lecture.day.charAt(0).toUpperCase() + lecture.day.slice(1),
+        time: `${lecture.start_time}-${lecture.end_time}`,
+        week_type: lecture.week_type
+      }));
+    }
   },
   methods: {
     ...mapActions('schedule', [

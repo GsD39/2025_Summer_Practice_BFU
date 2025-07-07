@@ -1,23 +1,27 @@
 <template>
   <div class="schedule-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th v-for="day in days" :key="day">{{ day }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="timeSlot in timeSlots" :key="timeSlot">
-          <td>{{ formatTimeSlot(timeSlot) }}</td>
-          <td v-for="day in days" :key="`${day}-${timeSlot}`">
+    <div class="week-view">
+      <div class="week-header">
+        <div class="header-cell time-header">Time</div>
+        <div v-for="day in days" :key="day" class="header-cell">{{ day }}</div>
+      </div>
+      
+      <div class="week-body">
+        <div v-for="timeSlot in timeSlots" :key="timeSlot" class="time-row">
+          <div class="time-cell">{{ timeSlot }}</div>
+          <div v-for="day in days" :key="`${day}-${timeSlot}`" class="day-cell">
             <ScheduleItem 
-              :lecture="getLectureForSlot(day, timeSlot)" 
+              :lecture="findLecture(day, timeSlot)" 
             />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div v-if="schedule.length === 0" class="empty-schedule">
+      <font-awesome-icon icon="fa-calendar-times" size="2x" />
+      <p>No schedule found for the selected criteria</p>
+    </div>
   </div>
 </template>
 
@@ -31,34 +35,21 @@ export default {
   },
   data() {
     return {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       timeSlots: [
         '09:00-10:30',
         '10:45-12:15',
         '13:00-14:30',
         '14:45-16:15',
-        '16:30-18:00',
-        '18:15-19:45'
+        '16:30-18:00'
       ]
     }
   },
   methods: {
-    getLectureForSlot(day, timeSlot) {
-      const [startTime, endTime] = timeSlot.split('-');
+    findLecture(day, timeSlot) {
       return this.schedule.find(lecture => 
-        lecture.day.toLowerCase() === day.toLowerCase() &&
-        lecture.start_time === startTime &&
-        lecture.end_time === endTime
+        lecture.day === day && lecture.time === timeSlot
       );
-    },
-    formatTimeSlot(timeSlot) {
-      const [start, end] = timeSlot.split('-');
-      return `${this.formatTime(start)}-${this.formatTime(end)}`;
-    },
-    formatTime(time) {
-      const [hours, minutes] = time.split(':');
-      const hour = parseInt(hours, 10);
-      return hour > 12 ? `${hour - 12}:${minutes} PM` : `${hour}:${minutes} AM`;
     }
   }
 }
@@ -66,34 +57,63 @@ export default {
 
 <style scoped>
 .schedule-table {
-  overflow-x: auto;
   margin-top: 20px;
+  overflow-x: auto;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.week-view {
+  display: flex;
+  flex-direction: column;
   min-width: 800px;
 }
 
-th, td {
-  border: 1px solid #e0e0e0;
+.week-header, .time-row {
+  display: flex;
+}
+
+.header-cell, .time-cell, .day-cell {
+  flex: 1;
+  min-width: 150px;
   padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+}
+
+.week-header {
+  background-color: #2c3e50;
+  color: white;
+  font-weight: bold;
+}
+
+.header-cell {
   text-align: center;
 }
 
-th {
+.time-header {
   background-color: #2c3e50;
-  color: white;
-  font-weight: 600;
+  border-right: 1px solid #3a516e;
 }
 
-tr:nth-child(even) {
+.time-cell {
   background-color: #f8f9fa;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-td:first-child {
-  font-weight: 500;
-  background-color: #f1f5f9;
+.day-cell {
+  min-height: 100px;
+  background-color: #fff;
+}
+
+.empty-schedule {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+.empty-schedule svg {
+  margin-bottom: 15px;
+  color: #bdc3c7;
 }
 </style>
