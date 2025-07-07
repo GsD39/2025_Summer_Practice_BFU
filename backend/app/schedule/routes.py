@@ -194,7 +194,7 @@ def get_teachers():
     except Exception as e:
         return jsonify({'error': 'Internal server error'}), 500
         
-@schedule_bp.route('/groups', methods=['GET', 'OPTIONS'])
+@schedule_bp.route('/groups', methods=['GET'])
 @admin_required
 def get_all_groups():
     """Возвращает список всех учебных групп"""
@@ -205,6 +205,21 @@ def get_all_groups():
         ).order_by(Schedule.group).all()
         
         return jsonify([item.group for item in groups]), 200
+    
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
+    
+@schedule_bp.route('/subjects', methods=['GET'])
+@admin_required
+def get_all_subjects():
+    """Возвращает список всех учебных групп"""
+    try:
+        # Используем distinct для исключения дубликатов
+        subjects = db.session.query(
+            Schedule.group.distinct().label('subject')
+        ).order_by(Schedule.subject).all()
+        
+        return jsonify([item.subject for item in subjects]), 200
     
     except Exception as e:
         return jsonify({'error': 'Internal server error'}), 500

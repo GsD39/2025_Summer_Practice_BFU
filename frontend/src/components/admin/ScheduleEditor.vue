@@ -1,56 +1,60 @@
 <template>
     <div class="schedule-editor">
       <div class="editor-header">
-        <h2>Редактор расписания</h2>
+        <h2>Schedule manager</h2>
         <button class="add-lecture-btn" @click="openLectureForm(null)">
-          <font-awesome-icon icon="fa-plus" />Добавить новую лекцию
+          <font-awesome-icon icon="fa-plus" />Add new lecture
         </button>
       </div>
   
       <div class="filters">
         <div class="filter-group">
-          <label>Фильтровать по дню:</label>
-          <select v-model="formData.filterDay" @change="filterSchedule">
-            <option value="">Все дни</option>
+          <label>Filter by day:</label>
+          <input v-model="lectures.filterDay" @change="filterSchedule" />
+          <datalist>
+            <option value="">All days</option>
             <option v-for="day in days" :key="day" :value="day">{{ day }}</option>
-          </select>
+          </datalist>
         </div>
         
         <div class="filter-group">
-          <label>Фильтровать по преподавателю:</label>
-          <select v-model="formData.filterTeacher" @change="filterSchedule">
-            <option value="">Все преподаватели</option>
+          <label>Filter by teacher:</label>
+          <input v-model="lectures.filterTeacher" @change="filterSchedule" />
+          <datalist>
+            <option value="">All teachers</option>
             <option v-for="teacher in teachers" :key="teacher" :value="teacher">{{ teacher }}</option>
-          </select>
+          </datalist>
         </div>
         
         <div class="filter-group">
-          <label>Фильтровать по группе:</label>
-          <select v-model="formData.filterGroup" @change="filterSchedule">
-            <option value="">Все группы</option>
-            <option v-for="course in courses" :key="course" :value="course"> {{ course }}</option>
-          </select>
+          <label>Filter by groups:</label>
+          <input v-model="lectures.filterGroup" @change="filterSchedule" />
+          <datalist>
+            <option value="">All groups</option>
+            <option v-for="group in groups" :key="group" :value="group"> {{ group }}</option>
+          </datalist>
         </div>
       </div>
   
       <div class="schedule-list">
         <div class="list-header">
-          <div class="header-item">Время</div>
-          <div class="header-item">День</div>
-          <div class="header-item">Группа</div>
-          <div class="header-item">Преподаватель</div>
-          <div class="header-item">Аудитория</div>
-          <div class="header-item actions">Действия</div>
+          <div class="header-item">Time</div>
+          <div class="header-item">Day</div>
+          <div class="header-item">Group</div>
+          <div class="header-item">Subject</div>
+          <div class="header-item">Teacher</div>
+          <div class="header-item">Room</div>
+          <div class="header-item actions">Actions</div>
         </div>
         
         <div class="list-body">
           <div v-for="lecture in filteredLectures" :key="lecture.id" class="list-row">
             <div class="list-item time">{{ lecture.time }}</div>
             <div class="list-item day">{{ lecture.day }}</div>
-            <div class="list-item course">
-              <span class="course-code">{{ lecture.course.code }}</span>
-              <span class="course-name">{{ lecture.course.name }}</span>
+            <div class="list-item group">
+              <span class="group-name">{{ lecture.group }}</span>
             </div>
+            <div class="list-item subject">{{ lecture.subject }}</div>
             <div class="list-item teacher">{{ lecture.teacher }}</div>
             <div class="list-item room">{{ lecture.room }}</div>
             <div class="list-item groups">
@@ -68,13 +72,13 @@
           
           <div v-if="filteredLectures.length === 0" class="empty-list">
             <font-awesome-icon icon=" fa-calendar-times" />
-            <p>Ни одна лекция не найдена по заданным фильтрам</p>
+            <p>No lectures found</p>
           </div>
         </div>
       </div>
 
       <!-- Lecture Form Modal -->
-      <div v-if="formData.showLectureForm" class="modal-overlay">
+      <div v-if="newLecture.showLectureForm" class="modal-overlay">
         <div class="lecture-form-modal">
           <div class="modal-header">
             <h3>{{ editingLecture ? 'Edit Lecture' : 'Add New Lecture' }}</h3>
@@ -86,28 +90,30 @@
           <form @submit.prevent="saveLecture" class="lecture-form">
             <div class="form-row">
               <div class="form-group">
-                <label>Группа *</label>
-                <select v-model="formData.courseId" required>
-                  <option v-for="course in courses" :key="course" :value="course">
-                    {{ course.code }} - {{ course.name }}
+                <label>Group *</label>
+                <input v-model="newLecture.group" required />
+                <datalist>
+                  <option v-for="group in groups" :key="group" :value="group">
+                    {{ group.code }} - {{ group.name }}
                   </option>
-                </select>
+                </datalist>
               </div>
               
               <div class="form-group">
-                <label>Преподаватель *</label>
-                <select v-model="formData.teacher" required>
+                <label>Teacher *</label>
+                <input v-model="newLecture.teacher" required>
+                <datalist>
                   <option v-for="teacher in teachers" :key="teacher" :value="teacher">
                     {{ teacher }}
                   </option>
-                </select>
+                </datalist>
               </div>
             </div>
             
             <div class="form-row">
               <div class="form-group">
-                <label>День *</label>
-                <select v-model="formData.day" required>
+                <label>Day *</label>
+                <select v-model="newLecture.day" required>
                   <option v-for="day in days" :key="day" :value="day">
                     {{ day }}
                   </option>
@@ -115,25 +121,36 @@
               </div>
               
               <div class="form-group">
-                <label>Время *</label>
-                <select v-model="formData.time" required>
+                <label>Time *</label>
+                <input v-model="newLecture.time" required>
+                <datalist>
                   <option v-for="timeSlot in timeSlots" :key="timeSlot" :value="timeSlot">
                     {{ timeSlot }}
                   </option>
-                </select>
+                </datalist>
               </div>
             </div>
             
             <div class="form-row">
               <div class="form-group">
-                <label>Аудитория *</label>
-                <input type="text" v-model="formData.room" required>
+                <label>Room *</label>
+                <input type="text" v-model="newLecture.room" required>
+              </div>
+
+              <div class="form-group">
+                <label>Subject *</label>
+                <input v-model="newLecture.subject" required>
+                <datalist>
+                  <option v-for="subject in subjects" :key="subject" :value="subject">
+                    {{ subject }}
+                  </option>
+                </datalist>
               </div>
             </div>
             
             <div class="form-actions">
               <button type="button" class="cancel-btn" @click="closeLectureForm">
-                Закрыть
+                Close
               </button>
               <button type="submit" class="save-btn">
                 {{ editingLecture ? 'Update Lecture' : 'Add Lecture' }}
@@ -144,28 +161,29 @@
       </div>
   
       <!-- Delete Confirmation Modal -->
-      <div v-if="formData.showDeleteConfirmation" class="modal-overlay">
+      <div v-if="showDeleteConfirmation" class="modal-overlay">
         <div class="confirmation-modal">
           <div class="modal-header">
             <h3>Confirm Deletion</h3>
           </div>
           
           <div class="modal-body">
-            <p>Вы уверены, что хотите удалить эту лекцию?</p>
+            <p>Are you sure you want to delete this lecture?</p>
             <div class="lecture-preview">
-              <div><strong>Группа:</strong> {{ lectureToDelete.course.code }} - {{ lectureToDelete.course.name }}</div>
-              <div><strong>День/Время:</strong> {{ lectureToDelete.day }}, {{ lectureToDelete.time }}</div>
-              <div><strong>Преподаватель:</strong> {{ lectureToDelete.teacher }}</div>
-              <div><strong>Аудитория:</strong> {{ lectureToDelete.room }}</div>
+              <div><strong>Group:</strong> {{ lectureToDelete.group.code }} - {{ lectureToDelete.group.name }}</div>
+              <div><strong>Day/Time:</strong> {{ lectureToDelete.day }}, {{ lectureToDelete.time }}</div>
+              <div><strong>Teacher:</strong> {{ lectureToDelete.teacher }}</div>
+              <div><strong>Room:</strong> {{ lectureToDelete.room }}</div>
+              <div><strong>Room:</strong> {{ lectureToDelete.subject }}</div>
             </div>
           </div>
           
           <div class="modal-actions">
-            <button class="cancel-btn" @click="formData.showDeleteConfirmation = false">
-              Закрыть
+            <button class="cancel-btn" @click="showDeleteConfirmation = false">
+              Close
             </button>
             <button class="delete-btn" @click="submitDeleteLecture">
-              Удалить лекцию
+              Delete lecture
             </button>
           </div>
         </div>
@@ -178,11 +196,12 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapState('schedule', ['isLoading', 'error']),
-    ...mapGetters('schedule', ['filteredLectures']),
+    ...mapState('schedule', ['isLoading', 'error', 'lectures']),
+    ...mapGetters('schedule', ['groups', 'subjects', 'teachers']),
     
-    courses() {
-      return this.$store.state.schedule.courses;
+    groups() {
+      console.log("Returning groups", this.$store.state.schedule.groups)
+      return this.$store.state.schedule.groups;
     },
     teachers() {
       return this.$store.state.schedule.teachers;
@@ -192,6 +211,17 @@ export default {
     await this.fetchAllLectures();
     await this.fetchGroups();
     await this.fetchTeachers();
+  },
+  watch: {
+    lectures: {
+      immediate: true,
+      handler(newLectures) {
+        this.filteredLectures = [...newLectures]
+      }
+    }
+  },
+  created() {
+    this.fetchAllLectures()
   },
   methods: {
     ...mapActions('schedule', [
@@ -204,46 +234,56 @@ export default {
     ]),
 
     async saveLecture() {
+      console.log(this.groups)
       const payload = {
         id: this.editingLecture?.id,
         data: {
-          group: this.courses.find(c => c.id === this.formData.courseId)?.code,
-          subject: this.courses.find(c => c.id === this.formData.courseId)?.name,
-          teacher: this.formData.teacher,
-          room: this.formData.room,
-          day: this.formData.day,
-          start_time: this.formData.start_time,
-          end_time: this.formData.end_time,
-          week_type: this.formData.week_type
+          group: this.newLecture.group,
+          subject: this.newLecture.subject,
+          teacher: this.newLecture.teacher,
+          room: this.newLecture.room,
+          day: this.newLecture.day,
+          start_time: this.newLecture.start_time,
+          end_time: this.newLecture.end_time,
+          week_type: this.newLecture.week_type
         }
       };
-      console,log(payload)
 
       if (this.editingLecture) {
         await this.updateLecture(payload);
       } else {
+        console.log(payload)
         await this.createLecture(payload.data);
-        this.formData.showLectureForm = false;
+        this.showLectureForm = false;
         this.filterSchedule();
       }
       this.closeLectureForm();
       await this.fetchAllLectures();
     },
 
+    async filterSchedule() {
+      await this.fetchAllLectures(); // TODO
+    },
+
+    async confirmDelete() {
+      await this.submitDeleteLecture(); // TODO
+    },
+
     async submitDeleteLecture(lecture) {
       await this.deleteLecture(lecture.id);
-      this.formData.showDeleteConfirmation = false;
+      this.showDeleteConfirmation = false;
       await this.fetchAllLectures();
     },
 
     closeLectureForm() {
-      this.formData.showLectureForm = false;
+      this.showLectureForm = false;
     },
 
     openLectureForm(lecture) {
       if (lecture) {
-        this.formData = {
-          courseId: this.courses.find(c => c.code === lecture.group)?.id,
+        this.newLecture = {
+          groupId: lecture.groups,
+          subject: lecture.subject,
           teacher: lecture.teacher,
           day: lecture.day,
           start_time: lecture.start_time,
@@ -253,17 +293,17 @@ export default {
         };
       }
       this.editingLecture = lecture;
-      this.formData.showLectureForm = true;
-      console.log(this.formData.showLectureForm)
+      this.showLectureForm = true;
     }
   },
 
   data() {
     return {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      formData: {
-        courseId: '',
+      newLecture: {
+        group: '',
         teacher: '',
+        subject: '',
         day: 'Monday',
         start_time: '09:00',
         end_time: '10:30',
@@ -272,10 +312,10 @@ export default {
         filterDay: '',
         filterTeacher: '',
         filterGroup: '',
-        showLectureForm: false,
-        showDeleteConfirmation: false,
-        formKey: 0,
       },
+      showLectureForm: false,
+      showDeleteConfirmation: false,
+      filteredLectures: [],
     }
   }
 }
@@ -426,13 +466,13 @@ export default {
     background: #c0392b;
   }
   
-  .course-code {
+  .group-code {
     font-weight: bold;
     color: #3498db;
     margin-right: 8px;
   }
   
-  .course-name {
+  .group-name {
     color: #555;
   }
   

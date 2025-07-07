@@ -5,6 +5,7 @@ export default {
   state: {
     lectures: [],
     groups: [],
+    subjects: [],
     teachers: [],
     schedule: [],
     isLoading: false,
@@ -17,10 +18,13 @@ export default {
   },
   mutations: {
     SET_LECTURES(state, lectures) {
-      state.lectures = [...state.lectures, lecture];
+      state.lectures = lectures;
     },
     SET_GROUPS(state, groups) {
       state.groups = groups
+    },
+    SET_SUBJECTS(state, subjects) {
+      state.subjects = subjects
     },
     SET_TEACHERS(state, teachers) {
       state.teachers = teachers
@@ -89,7 +93,7 @@ export default {
       commit('SET_LOADING', true);
       try {
         const response = await scheduleApi.getAllLectures();
-		console.log(response.data);
+		console.log( "response data!", response.data);
         commit('SET_LECTURES', JSON.parse(response.data));
         return response.data;
       } catch (error) {
@@ -108,7 +112,7 @@ export default {
       try {
 		  
         const response = await scheduleApi.getGroups();
-		console.log(response.data);
+		    console.log(response.data);
         commit('SET_GROUPS', JSON.parse(JSON.stringify(response.data)));
         return response.data;
       } catch (error) {
@@ -116,6 +120,24 @@ export default {
           commit('SET_ERROR', 'Backend server unavailable. Please try again later.');
         } else {
           commit('SET_ERROR', error.response?.data?.message || 'Failed to load groups');
+        }
+      } finally {
+        commit('SET_LOADING', false);
+      }
+    },
+
+    async fetchSubjects({ commit }) {
+      commit('SET_LOADING', true);
+      try {
+        const response = await scheduleApi.getSubjects();
+		    console.log(response.data);
+        commit('SET_SUBJECTS', JSON.parse(JSON.stringify(response.data)));
+        return response.data;
+      } catch (error) {
+        if (error.message === "Network Error") {
+          commit('SET_ERROR', 'Backend server unavailable. Please try again later.');
+        } else {
+          commit('SET_ERROR', error.response?.data?.message || 'Failed to load subjects');
         }
       } finally {
         commit('SET_LOADING', false);
@@ -182,31 +204,11 @@ export default {
       commit('SET_FILTER', { key, value })
     }
   },
-  getters: {
-    filteredLectures: (state) => {
-      return state.lectures.filter(lecture => {
-        if (state.filters.day && lecture.day.toLowerCase() !== state.filters.day.toLowerCase()) {
-          return false
-        }
-        if (state.filters.teacher && lecture.teacher !== state.filters.teacher) {
-          return false
-        }
-        if (state.filters.group && lecture.group !== state.filters.group) {
-          return false
-        }
-        return true
-      })
-    },
-    
-    uniqueDays: (state) => {
-      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-      const usedDays = [...new Set(state.lectures.map(l => l.day))]
-      return days.filter(day => usedDays.includes(day))
-    },
-    
+  getters: {        
     isLoading: (state) => state.isLoading,
     error: (state) => state.error,
     groups: (state) => state.groups,
+    subjects: (state) => state.subjects,
     teachers: (state) => state.teachers,
     currentFilters: (state) => state.filters
   }

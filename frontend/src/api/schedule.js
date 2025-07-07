@@ -12,12 +12,14 @@ export default {
   },
   
   createLecture(lectureData) {
+    console.log("createLecture", lectureData, axios.post('/schedule/', lectureData));
     return axios.post('/schedule/', lectureData)
   },
   createLecturesBatch(lectures) {
     return axios.post('/schedule/batch', lectures)
   },
   getAllLectures() {
+    console.log("getAllLectures", axios.get('/schedule/admin/all'));
     return axios.get('/schedule/admin/all')
   },
   deleteLecture(lectureId) {
@@ -28,6 +30,9 @@ export default {
   },
   getTeachers() {
     return axios.get('/schedule/teachers');
+  },
+  getSubjects() {
+    return axios.get('/schedule/subjects');
   },
   updateLecture(lectureId, lectureData) {
     return axios.put(`/schedule/${lectureId}`, lectureData);
