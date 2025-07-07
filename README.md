@@ -31,24 +31,45 @@ Just a little piece of code for so-called "educational purposes"
 │   └── wsgi.py
 ├── frontend/                     
 │   ├── public/
+│   │   ├── favicon.ico
 │   ├── src/
 │   │   ├── api/                  
 │   │   │   ├── auth.js
 │   │   │   ├── admin.js
 │   │   │   └── schedule.js
 │   │   ├── assets/
+│   │   │   ├── base.css
+│   │   │   ├── logo.svg
+│   │   │   ├── main.css
 │   │   ├── components/
-│   │   │   ├── ScheduleWeek.vue
-│   │   │   ├── ScheduleDate.vue
-│   │   │   └── Auth/
-│   │   │       ├── LoginForm.vue
-│   │   │       └── RegisterForm.vue
-│   │   ├── router/               
-│   │   ├── store/                
+│   │   │   ├── admin/
+│   │   │   ├── schedule/
+│   │   │   │   ├── LectureForm.vue
+│   │   │   │   ├── ScheduleEditor.vue
+│   │   │   │   └── UserManagement.vue
+│   │   │   ├── auth/
+│   │   │   │   └── LoginForm.vue
+│   │   │   ├── icons/
+│   │   │   │   └── IconCommunity.vue
+│   │   │   ├── schedule/
+│   │   │   │   ├── ScheduleFilter.vue
+│   │   │   │   ├── ScheduleTable.vue
+│   │   │   └── └── ScheduleItem.vue
+│   │   ├── router/
+│   │   │   └── index.js             
+│   │   ├── store/
+│   │   │   ├── modules/
+│   │   │   │   ├── admin.js
+│   │   │   │   ├── auth.js
+│   │   │   │   └── schedule.js
+│   │   │   └── index.js             
 │   │   ├── views/
 │   │   │   ├── AuthView.vue
 │   │   │   ├── ScheduleView.vue
+│   │   │   ├── NotFound.vue
 │   │   │   └── AdminView.vue
+│   │   ├── utils/
+│   │   │   └── auth.js
 │   │   ├── App.vue
 │   │   └── main.js
 │   ├── package.json
