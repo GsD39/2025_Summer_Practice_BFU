@@ -11,6 +11,15 @@ from ..auth.utils import create_tokens, token_required, validate_token
 
 auth_bp = Blueprint('auth', __name__)
 
+
+def handle_options_request():
+    if request.method == 'OPTIONS':
+        response = jsonify()
+        response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+        return response
+    
+
 @auth_bp.route('/startup', methods=['POST'])
 def startup():
     user = User.query.first()
@@ -31,7 +40,6 @@ def startup():
 
 
 @auth_bp.route('/logout', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @token_required
 def logout():
     user_id = get_jwt_identity()
@@ -45,7 +53,6 @@ def logout():
 
 
 @auth_bp.route('/login', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 def login():
     data = request.get_json()
     if not data or 'email' not in data or 'password' not in data:
@@ -73,7 +80,6 @@ def login():
 
 
 @auth_bp.route('/refresh', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 def refresh():
     refresh_token = request.json.get('refresh_token')
     if not refresh_token:

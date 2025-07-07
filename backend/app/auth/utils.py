@@ -68,14 +68,16 @@ def create_jwt_token(user_id, role):
         current_app.logger.error(f"Token creation error: {str(e)}")
         raise
 
-
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
+            
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return jsonify({'error': 'Authorization header is missing'}), 401
-
+        
         try:
             token = auth_header.split()[1]  # Bearer <token>
             payload = jwt.decode(
@@ -93,7 +95,6 @@ def admin_required(f):
             return jsonify({'error': f'Authorization error: {str(e)}'}), 500
 
         return f(*args, **kwargs)
-
     return decorated_function
 
 

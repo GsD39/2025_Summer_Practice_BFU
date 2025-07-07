@@ -4,10 +4,10 @@
       <h2>User Management</h2>
       <div class="actions">
         <button class="add-btn" @click="showCreateForm = true">
-          <i class="fas fa-plus"></i> Add User
+          <font-awesome-icon icon="fa-plus" /> Add User
         </button>
         <button class="batch-btn" @click="showBatchForm = true">
-          <i class="fas fa-users"></i> Batch Create
+          <font-awesome-icon icon="fa-users" /> Batch Create
         </button>
       </div>
     </div>
@@ -19,7 +19,7 @@
         placeholder="Search by email..." 
         @input="filterUsers"
       >
-      <i class="fas fa-search"></i>
+      <font-awesome-icon icon="fa-search" />
     </div>
 
     <div class="table-container">
@@ -59,7 +59,7 @@
             </td>
             <td>
               <button @click="confirmDelete(user)" class="delete-btn">
-                <i class="fas fa-trash"></i>
+                <font-awesome-icon icon="fa-trash" />
               </button>
             </td>
           </tr>
@@ -67,7 +67,7 @@
       </table>
       
       <div v-if="filteredUsers.length === 0" class="empty-state">
-        <i class="fas fa-user-slash"></i>
+        <font-awesome-icon icon="fa-user-slash" />
         <p>No users found</p>
       </div>
     </div>
@@ -78,7 +78,7 @@
         <div class="modal-header">
           <h3>Create New User</h3>
           <button @click="closeCreateForm">
-            <i class="fas fa-times"></i>
+            <font-awesome-icon icon="fa-times" />
           </button>
         </div>
         
@@ -97,7 +97,7 @@
                 required
               >
               <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
               </button>
             </div>
           </div>
@@ -127,7 +127,7 @@
         <div class="modal-header">
           <h3>Batch Create Users</h3>
           <button @click="closeBatchForm">
-            <i class="fas fa-times"></i>
+            <font-awesome-icon icon="fa-times" />
           </button>
         </div>
         
@@ -155,7 +155,7 @@
           ></textarea>
           
           <div v-if="batchError" class="error-message">
-            <i class="fas fa-exclamation-circle"></i> {{ batchError }}
+            <font-awesome-icon icon="fa-exclamation-circle" /> {{ batchError }}
           </div>
         </div>
         
@@ -183,8 +183,7 @@
         <div class="modal-actions">
           <button @click="userToDelete = null">Cancel</button>
           <button @click="submitDeleteUser" class="delete-btn" :disabled="isDeleting">
-            <i class="fas fa-trash"></i> 
-            {{ isDeleting ? 'Deleting...' : 'Delete User' }}
+            <font-awesome-icon icon="fa-trash" /> 
           </button>
         </div>
       </div>
@@ -310,10 +309,7 @@ export default {
       this.isBatchCreating = true
       
       try {
-        // Parse JSON input
         const users = JSON.parse(this.batchUsersJson)
-        
-        // Validate input
         if (!Array.isArray(users)) {
           throw new Error('Input must be a JSON array')
         }
@@ -322,7 +318,6 @@ export default {
           throw new Error('No users provided')
         }
         
-        // Validate each user
         for (const user of users) {
           if (!user.email || !user.password || !user.role) {
             throw new Error('Each user must have email, password, and role')
@@ -333,7 +328,6 @@ export default {
           }
         }
         
-        // Create users
         await this.createUsersBatch(users)
         this.closeBatchForm()
         this.fetchUsers() // Refresh user list
@@ -518,7 +512,6 @@ input:checked + .slider:before {
 }
 
 .delete-btn {
-  background: none;
   border: none;
   color: #e74c3c;
   cursor: pointer;

@@ -2,18 +2,22 @@ import axios from 'axios'
 
 export default {
   getUsers() {
-    return axios.get('/api/admin/users')
+    return axios.get('/admin/users/all')
   },
+  
   createUser(userData) {
-    return axios.post('/api/admin/users', userData)
+    return axios.post('/admin/users', userData)
   },
+  
   createUsersBatch(users) {
-    return axios.post('/api/admin/users/batch', users)
+    return axios.post('/admin/users/batch', users)
   },
+  
   updateUser(id, userData) {
-    return axios.put(`/api/admin/users/${id}`, userData)
+    return axios.put(`/admin/users/${id}`, userData)
   },
+  
   deleteUser(id) {
-    return axios.delete(`/api/admin/users/${id}`)
-  }
+    return axios.delete(`/admin/users/${id}`)
+  },
 }

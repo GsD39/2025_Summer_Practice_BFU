@@ -9,9 +9,17 @@ schedule_bp = Blueprint('schedule', __name__)
 
 ORIGIN = 'http://localhost:3000'#TODO
 
+
+def handle_options_request():
+    if request.method == 'OPTIONS':
+        response = jsonify()
+        response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+        return response
+
+
 @schedule_bp.route('/group/<group_name>', methods=['GET'])
 @token_required
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 def get_group_schedule(group_name):
     date_str = request.args.get('date')
     try:
@@ -42,7 +50,6 @@ def get_group_schedule(group_name):
 
 
 @schedule_bp.route('/teacher/<teacher_name>', methods=['GET'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @token_required
 def get_teacher_schedule(teacher_name):
     date_str = request.args.get('date')
@@ -74,7 +81,6 @@ def get_teacher_schedule(teacher_name):
 
 
 @schedule_bp.route('/', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def add_schedule_item():
     data = request.get_json()
@@ -98,7 +104,6 @@ def add_schedule_item():
 
 
 @schedule_bp.route('/batch', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def add_schedule_batch():
     if not request.is_json:
@@ -134,7 +139,6 @@ def add_schedule_batch():
 
 
 @schedule_bp.route('/<int:schedule_id>', methods=['DELETE'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def delete_schedule_item(schedule_id):
     try:
@@ -149,7 +153,6 @@ def delete_schedule_item(schedule_id):
 
 
 @schedule_bp.route('/admin/all', methods=['GET'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def get_all_schedule():
     try:

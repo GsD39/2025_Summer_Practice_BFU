@@ -4,7 +4,7 @@
         <div class="header">
           <h3>Create New Lecture</h3>
           <button @click="$emit('close')">
-            <i class="fas fa-times"></i>
+            <font-awesome-icon icon=" fa-times" />
           </button>
         </div>
         

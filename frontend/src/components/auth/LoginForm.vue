@@ -3,14 +3,14 @@
     <h2>University Login</h2>
     
     <div v-if="errorMessage" class="error-message">
-      <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+      <font-awesome-icon icon="fa-exclamation-circle" /> {{ errorMessage }}
     </div>
     
     <form @submit.prevent="handleLogin">
       <div class="form-group">
         <label>Email Address</label>
         <div class="input-with-icon">
-          <i class="fas fa-envelope"></i>
+          <font-awesome-icon icon="fa-envelope" />
           <input 
             v-model="email" 
             type="email" 
@@ -23,7 +23,7 @@
       <div class="form-group">
         <label>Password</label>
         <div class="input-with-icon">
-          <i class="fas fa-lock"></i>
+          <font-awesome-icon icon="fa-lock" />
           <input 
             v-model="password" 
             :type="showPassword ? 'text' : 'password'" 
@@ -35,13 +35,13 @@
             class="toggle-password" 
             @click="showPassword = !showPassword"
           >
-            <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
           </button>
         </div>
       </div>
       
       <button type="submit" class="login-btn" :disabled="isLoading">
-        <i class="fas fa-sign-in-alt"></i> 
+        <font-awesome-icon icon="fa-sign-in-alt" /> 
         {{ isLoading ? 'Logging in...' : 'Login to System' }}
       </button>
     </form>
@@ -79,7 +79,6 @@ export default {
           errorMessage: this.error
         })
         
-        // Add this delay to ensure Vuex state updates propagate
         await new Promise(resolve => setTimeout(resolve, 50))
         
         const redirect = this.$route.query.redirect || '/schedule'
@@ -87,7 +86,6 @@ export default {
         this.$router.replace(redirect)
         
       } catch (error) {
-        // Error handling remains the same
       } finally {
         this.isLoading = false
       }

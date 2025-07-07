@@ -44,5 +44,4 @@ def create_app() -> Flask:
     from .schedule.routes import schedule_bp
     app.register_blueprint(schedule_bp, url_prefix='/api/schedule')
 
-
     return app

@@ -8,12 +8,19 @@ from flask_cors import cross_origin
 
 ORIGIN = 'http://localhost:3000' #TODO
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
+admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/users/batch', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
+def handle_options_request():
+    if request.method == 'OPTIONS':
+        response = jsonify()
+        response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+        return response
+
+
 @admin_required
+@admin_bp.route('/users/batch', methods=['POST'])
 def create_users_batch():
     try:
 
@@ -62,7 +69,6 @@ def create_users_batch():
         return jsonify({'error': f'{str(e)}'}), 500
 
 
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_bp.route('/users/all', methods=['GET'])
 @admin_required
 def get_users():
@@ -77,7 +83,6 @@ def get_users():
 
 
 @admin_bp.route('/users', methods=['POST'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def create_user():
     try:
@@ -113,7 +118,6 @@ def create_user():
 
 
 @admin_bp.route('/users/<int:user_id>', methods=['PUT'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def update_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -136,7 +140,6 @@ def update_user(user_id):
 
 
 @admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
-@cross_origin(origin=ORIGIN, supports_credentials=True)
 @admin_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)

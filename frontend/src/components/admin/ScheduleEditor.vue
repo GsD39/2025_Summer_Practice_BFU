@@ -3,7 +3,7 @@
       <div class="editor-header">
         <h2>Редактор расписания</h2>
         <button class="add-lecture-btn" @click="openLectureForm(null)">
-          <i class="fas fa-plus"></i> Добавить новую лекцию
+          <font-awesome-icon icon="fa-plus" />Добавить новую лекцию
         </button>
       </div>
   
@@ -60,16 +60,16 @@
             </div>
             <div class="list-item actions">
               <button class="edit-btn" @click="openLectureForm(lecture)">
-                <i class="fas fa-edit"></i>
+                <font-awesome-icon icon=" fa-edit" />
               </button>
               <button class="delete-btn" @click="confirmDelete(lecture)">
-                <i class="fas fa-trash"></i>
+                <font-awesome-icon icon=" fa-trash" />
               </button>
             </div>
           </div>
           
           <div v-if="filteredLectures.length === 0" class="empty-list">
-            <i class="fas fa-calendar-times"></i>
+            <font-awesome-icon icon=" fa-calendar-times" />
             <p>Ни одна лекция не найдена по заданным фильтрам</p>
           </div>
         </div>
@@ -81,7 +81,7 @@
           <div class="modal-header">
             <h3>{{ editingLecture ? 'Edit Lecture' : 'Add New Lecture' }}</h3>
             <button class="close-btn" @click="closeLectureForm">
-              <i class="fas fa-times"></i>
+              <font-awesome-icon icon=" fa-times" />
             </button>
           </div>
           
@@ -137,7 +137,7 @@
                 <div class="groups-selector">
                   <div class="selected-groups">
                     <span v-for="group in formData.groups" :key="group" class="group-tag">
-                      {{ group }} <i class="fas fa-times" @click="removeGroup(group)"></i>
+                      {{ group }} <font-awesome-icon icon=" fa-times" @click="removeGroup(group)"></i>
                     </span>
                   </div>
                   <div class="group-input">
@@ -148,7 +148,7 @@
                       @keydown.enter.prevent="addGroup"
                     >
                     <button type="button" @click="addGroup" class="add-group-btn">
-                      <i class="fas fa-plus"></i>
+                      <font-awesome-icon icon=" fa-plus"></i>
                     </button>
                   </div>
                 </div>
