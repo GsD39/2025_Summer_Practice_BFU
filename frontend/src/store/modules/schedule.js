@@ -17,7 +17,7 @@ export default {
   },
   mutations: {
     SET_LECTURES(state, lectures) {
-      state.lectures = lectures
+      state.lectures = [...state.lectures, lecture];
     },
     SET_GROUPS(state, groups) {
       state.groups = groups
@@ -41,9 +41,13 @@ export default {
       state.lectures.push(lecture)
     },
     UPDATE_LECTURE(state, updatedLecture) {
-      const index = state.lectures.findIndex(l => l.id === updatedLecture.id)
+      const index = state.lectures.findIndex(l => l.id === updatedLecture.id);
       if (index !== -1) {
-        state.lectures.splice(index, 1, updatedLecture)
+        state.lectures = [
+          ...state.lectures.slice(0, index),
+          updatedLecture,
+          ...state.lectures.slice(index + 1)
+        ];
       }
     },
     REMOVE_LECTURE(state, lectureId) {
@@ -55,6 +59,7 @@ export default {
       commit('SET_LOADING', true)
       try {
         const response = await scheduleApi.getGroupSchedule(group, date)
+		console.log(response.data);
         commit('SET_SCHEDULE', response.data)
         return response.data
       } catch (error) {
@@ -69,6 +74,7 @@ export default {
       commit('SET_LOADING', true)
       try {
         const response = await scheduleApi.getTeacherSchedule(teacher, date)
+		console.log(response.data);
         commit('SET_SCHEDULE', response.data)
         return response.data
       } catch (error) {
@@ -83,7 +89,8 @@ export default {
       commit('SET_LOADING', true);
       try {
         const response = await scheduleApi.getAllLectures();
-        commit('SET_LECTURES', response.data);
+		console.log(response.data);
+        commit('SET_LECTURES', JSON.parse(response.data));
         return response.data;
       } catch (error) {
         if (error.message === "Network Error") {
@@ -95,11 +102,31 @@ export default {
         commit('SET_LOADING', false);
       }
     },
+	
+	async fetchGroups({ commit }) {
+      commit('SET_LOADING', true);
+      try {
+		  
+        const response = await scheduleApi.getGroups();
+		console.log(response.data);
+        commit('SET_GROUPS', JSON.parse(JSON.stringify(response.data)));
+        return response.data;
+      } catch (error) {
+        if (error.message === "Network Error") {
+          commit('SET_ERROR', 'Backend server unavailable. Please try again later.');
+        } else {
+          commit('SET_ERROR', error.response?.data?.message || 'Failed to load groups');
+        }
+      } finally {
+        commit('SET_LOADING', false);
+      }
+    },
     
     async createLecture({ commit }, lectureData) {
       commit('SET_LOADING', true)
       try {
         const response = await scheduleApi.createLecture(lectureData)
+		console.log(response.data);
         commit('ADD_LECTURE', response.data)
         return response.data
       } catch (error) {
@@ -114,6 +141,7 @@ export default {
       commit('SET_LOADING', true)
       try {
         const response = await scheduleApi.updateLecture(id, data)
+		console.log(response.data);
         commit('UPDATE_LECTURE', response.data)
         return response.data
       } catch (error) {
@@ -137,21 +165,12 @@ export default {
       }
     },
     
-    async fetchGroups({ commit }) {
-      try {
-        const response = await scheduleApi.getGroups()
-        commit('SET_GROUPS', response.data)
-        return response.data
-      } catch (error) {
-        commit('SET_ERROR', error.response?.data?.message || 'Failed to load groups')
-        throw error
-      }
-    },
     
     async fetchTeachers({ commit }) {
       try {
         const response = await scheduleApi.getTeachers()
-        commit('SET_TEACHERS', response.data)
+		console.log(response.data);
+        commit('SET_TEACHERS', JSON.parse(JSON.stringify(response.data)))
         return response.data
       } catch (error) {
         commit('SET_ERROR', error.response?.data?.message || 'Failed to load teachers')

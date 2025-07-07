@@ -249,6 +249,7 @@ export default {
         id: user.id,
         role: user.role
       })
+      this.fetchUsers();
     },
     
     toggleUserStatus(user) {
@@ -256,6 +257,7 @@ export default {
         id: user.id,
         is_active: !user.is_active
       })
+      this.fetchUsers();
     },
     
     confirmDelete(user) {
@@ -274,6 +276,7 @@ export default {
       } finally {
         this.isDeleting = false
       }
+      await this.fetchUsers();
     },
     
     closeCreateForm() {
@@ -296,6 +299,7 @@ export default {
       } finally {
         this.isCreating = false
       }
+      await this.fetchUsers();
     },
     
     closeBatchForm() {
@@ -330,7 +334,7 @@ export default {
         
         await this.createUsersBatch(users)
         this.closeBatchForm()
-        this.fetchUsers() // Refresh user list
+        await this.fetchUsers();
         
       } catch (error) {
         this.batchError = error.message

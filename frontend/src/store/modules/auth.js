@@ -1,4 +1,6 @@
 import authApi from '@/api/auth'
+import { setAuthToken } from '@/utils/auth'
+
 
 export default {
   namespaced: true,
@@ -31,9 +33,11 @@ export default {
         console.log(response.data.role)
         commit('SET_TOKEN', response.data.access_token)
         commit('SET_ROLE', response.data.role)
+		setAuthToken(response.data.access_token)
         return response.data
       } catch (error) {
         commit('CLEAR_AUTH')
+		setAuthToken(null)
         return error       //TODO Doesn't show error to user
       }
     },
@@ -56,8 +60,11 @@ export default {
       if (!state.token) return
       
       try {
+		console.warn(localStorage.getItem('token'))
+		setAuthToken(localStorage.getItem('token'))  
         const response = await authApi.getUser()
         commit('SET_ROLE', response.data)
+		commit('SET_TOKEN', response.data.access_token)
       } catch (error) {
         commit('CLEAR_AUTH')
         throw error

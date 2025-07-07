@@ -10,15 +10,6 @@ schedule_bp = Blueprint('schedule', __name__)
 ORIGIN = 'http://localhost:3000'#TODO
 
 
-@schedule_bp.after_request
-def handle_options_request():
-    if request.method == 'OPTIONS':
-        response = jsonify()
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
-        response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-        return response
-
 
 @schedule_bp.route('/group/<group_name>', methods=['GET'])
 @token_required
@@ -48,7 +39,7 @@ def get_group_schedule(group_name):
         'start_time': item.start_time.strftime('%H:%M'),
         'end_time': item.end_time.strftime('%H:%M'),
         'week_type': item.week_type.value
-    } for item in schedule])
+    } for item in schedule]), 200
 
 
 @schedule_bp.route('/teacher/<teacher_name>', methods=['GET'])
@@ -80,7 +71,7 @@ def get_teacher_schedule(teacher_name):
         'start_time': item.start_time.strftime('%H:%M'),
         'end_time': item.end_time.strftime('%H:%M'),
         'week_type': item.week_type.value
-    } for item in schedule])
+    } for item in schedule]), 200
 
 
 @schedule_bp.route('/', methods=['POST'])
@@ -155,7 +146,7 @@ def delete_schedule_item(schedule_id):
         return jsonify({'error': 'Internal server error'}), 500
 
 
-@schedule_bp.route('/admin/all', methods=['GET'])
+@schedule_bp.route('/admin/all', methods=['GET', "OPTIONS"])
 @admin_required
 def get_all_schedule():
     try:
@@ -182,36 +173,67 @@ def get_all_schedule():
             'start_time': item.start_time.strftime('%H:%M'),
             'end_time': item.end_time.strftime('%H:%M'),
             'week_type': item.week_type.value
-        } for item in schedule])
+        } for item in schedule]), 200
 
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
-    
-# @schedule_bp.route('/<int:schedule_id>', methods=['PUT'])
-# @admin_required
-# def update_schedule_item(schedule_id):
-#     item = Schedule.query.get_or_404(schedule_id)
-#     data = request.get_json()
-    
-#     try:
-#         item.group = data.get('group', item.group)
-#         item.subject = data.get('subject', item.subject)
-#         item.teacher = data.get('teacher', item.teacher)
-#         item.room = data.get('room', item.room)
-#         item.day = data.get('day', item.day).lower()
         
-#         if 'start_time' in data:
-#             item.start_time = datetime.strptime(data['start_time'], '%H:%M').time()
-#         if 'end_time' in data:
-#             item.end_time = datetime.strptime(data['end_time'], '%H:%M').time()
-#         if 'week_type' in data:
-#             item.week_type = WeekType(data['week_type'])
         
-#         db.session.commit()
-#         return jsonify({
-#             'message': 'Schedule item updated',
-#             'item': { /* return updated item */ }
-#         }), 200
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({'error': str(e)}), 400
+@schedule_bp.route('/teachers', methods=['GET', 'OPTIONS'])
+@admin_required
+def get_teachers():
+    """Возвращает список всех преподавателей"""
+    try:
+        # Используем distinct для исключения дубликатов
+        teachers = db.session.query(
+            Schedule.teacher.distinct().label('teacher')
+        ).order_by(Schedule.teacher).all()
+        
+        return jsonify([item.teacher for item in teachers]), 200
+    
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
+        
+@schedule_bp.route('/groups', methods=['GET', 'OPTIONS'])
+@admin_required
+def get_all_groups():
+    """Возвращает список всех учебных групп"""
+    try:
+        # Используем distinct для исключения дубликатов
+        groups = db.session.query(
+            Schedule.group.distinct().label('group')
+        ).order_by(Schedule.group).all()
+        
+        return jsonify([item.group for item in groups]), 200
+    
+    except Exception as e:
+        return jsonify({'error': 'Internal server error'}), 500
+    
+@schedule_bp.route('/<int:schedule_id>', methods=['PUT'])
+@admin_required
+def update_schedule_item(schedule_id):
+    item = Schedule.query.get_or_404(schedule_id)
+    data = request.get_json()
+    
+    try:
+        item.group = data.get('group', item.group)
+        item.subject = data.get('subject', item.subject)
+        item.teacher = data.get('teacher', item.teacher)
+        item.room = data.get('room', item.room)
+        item.day = data.get('day', item.day).lower()
+        
+        if 'start_time' in data:
+            item.start_time = datetime.strptime(data['start_time'], '%H:%M').time()
+        if 'end_time' in data:
+            item.end_time = datetime.strptime(data['end_time'], '%H:%M').time()
+        if 'week_type' in data:
+            item.week_type = WeekType(data['week_type'])
+        
+        db.session.commit()
+        return jsonify({
+            'message': 'Schedule item updated',
+            'item': item
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400

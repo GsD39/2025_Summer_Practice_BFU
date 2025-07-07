@@ -10,7 +10,7 @@
       <div class="filters">
         <div class="filter-group">
           <label>Фильтровать по дню:</label>
-          <select v-model="filterDay" @change="filterSchedule">
+          <select v-model="formData.filterDay" @change="filterSchedule">
             <option value="">Все дни</option>
             <option v-for="day in days" :key="day" :value="day">{{ day }}</option>
           </select>
@@ -18,7 +18,7 @@
         
         <div class="filter-group">
           <label>Фильтровать по преподавателю:</label>
-          <select v-model="filterTeacher" @change="filterSchedule">
+          <select v-model="formData.filterTeacher" @change="filterSchedule">
             <option value="">Все преподаватели</option>
             <option v-for="teacher in teachers" :key="teacher" :value="teacher">{{ teacher }}</option>
           </select>
@@ -26,11 +26,9 @@
         
         <div class="filter-group">
           <label>Фильтровать по группе:</label>
-          <select v-model="filterGroup" @change="filterSchedule">
+          <select v-model="formData.filterGroup" @change="filterSchedule">
             <option value="">Все группы</option>
-            <option v-for="course in courses" :key="course.id" :value="course.id">
-              {{ course.code }} - {{ course.name }}
-            </option>
+            <option v-for="course in courses" :key="course" :value="course"> {{ course }}</option>
           </select>
         </div>
       </div>
@@ -74,9 +72,9 @@
           </div>
         </div>
       </div>
-  
+
       <!-- Lecture Form Modal -->
-      <div v-if="showLectureForm" class="modal-overlay">
+      <div v-if="formData.showLectureForm" class="modal-overlay">
         <div class="lecture-form-modal">
           <div class="modal-header">
             <h3>{{ editingLecture ? 'Edit Lecture' : 'Add New Lecture' }}</h3>
@@ -90,7 +88,7 @@
               <div class="form-group">
                 <label>Группа *</label>
                 <select v-model="formData.courseId" required>
-                  <option v-for="course in courses" :key="course.id" :value="course.id">
+                  <option v-for="course in courses" :key="course" :value="course">
                     {{ course.code }} - {{ course.name }}
                   </option>
                 </select>
@@ -131,28 +129,6 @@
                 <label>Аудитория *</label>
                 <input type="text" v-model="formData.room" required>
               </div>
-              
-              <!-- <div class="form-group">
-                <label>Группа *</label>
-                <div class="groups-selector">
-                  <div class="selected-groups">
-                    <span v-for="group in formData.groups" :key="group" class="group-tag">
-                      {{ group }} <font-awesome-icon icon=" fa-times" @click="removeGroup(group)"></i>
-                    </span>
-                  </div>
-                  <div class="group-input">
-                    <input 
-                      type="text" 
-                      v-model="newGroup" 
-                      placeholder="Add group..."
-                      @keydown.enter.prevent="addGroup"
-                    >
-                    <button type="button" @click="addGroup" class="add-group-btn">
-                      <font-awesome-icon icon=" fa-plus"></i>
-                    </button>
-                  </div>
-                </div>
-              </div> -->
             </div>
             
             <div class="form-actions">
@@ -168,7 +144,7 @@
       </div>
   
       <!-- Delete Confirmation Modal -->
-      <div v-if="showDeleteConfirmation" class="modal-overlay">
+      <div v-if="formData.showDeleteConfirmation" class="modal-overlay">
         <div class="confirmation-modal">
           <div class="modal-header">
             <h3>Confirm Deletion</h3>
@@ -185,10 +161,10 @@
           </div>
           
           <div class="modal-actions">
-            <button class="cancel-btn" @click="showDeleteConfirmation = false">
+            <button class="cancel-btn" @click="formData.showDeleteConfirmation = false">
               Закрыть
             </button>
-            <button class="delete-btn" @click="deleteLecture">
+            <button class="delete-btn" @click="submitDeleteLecture">
               Удалить лекцию
             </button>
           </div>
@@ -214,7 +190,7 @@ export default {
   },
   async mounted() {
     await this.fetchAllLectures();
-    await this.fetchCourses();
+    await this.fetchGroups();
     await this.fetchTeachers();
   },
   methods: {
@@ -223,7 +199,7 @@ export default {
       'createLecture',
       'updateLecture',
       'deleteLecture',
-      'fetchCourses',
+      'fetchGroups',
       'fetchTeachers'
     ]),
 
@@ -241,18 +217,27 @@ export default {
           week_type: this.formData.week_type
         }
       };
+      console,log(payload)
 
       if (this.editingLecture) {
         await this.updateLecture(payload);
       } else {
         await this.createLecture(payload.data);
+        this.formData.showLectureForm = false;
+        this.filterSchedule();
       }
       this.closeLectureForm();
+      await this.fetchAllLectures();
     },
 
-    async deleteLecture(lecture) {
+    async submitDeleteLecture(lecture) {
       await this.deleteLecture(lecture.id);
-      this.showDeleteConfirmation = false;
+      this.formData.showDeleteConfirmation = false;
+      await this.fetchAllLectures();
+    },
+
+    closeLectureForm() {
+      this.formData.showLectureForm = false;
     },
 
     openLectureForm(lecture) {
@@ -268,9 +253,11 @@ export default {
         };
       }
       this.editingLecture = lecture;
-      this.showLectureForm = true;
+      this.formData.showLectureForm = true;
+      console.log(this.formData.showLectureForm)
     }
   },
+
   data() {
     return {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -281,7 +268,13 @@ export default {
         start_time: '09:00',
         end_time: '10:30',
         week_type: 'lower',
-        room: ''
+        room: '',
+        filterDay: '',
+        filterTeacher: '',
+        filterGroup: '',
+        showLectureForm: false,
+        showDeleteConfirmation: false,
+        formKey: 0,
       },
     }
   }

@@ -49,7 +49,17 @@ def logout():
         user.refresh_token = None
         db.session.commit()
 
-    return jsonify({'message': 'Successfully logged out'})
+    return jsonify({'message': 'Successfully logged out'}), 200
+    
+    
+@auth_bp.route('/user', methods=['GET'])
+@token_required
+def user():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    new_access, new_refresh = create_tokens(user.id, user.role)
+
+    return jsonify({'message': 'Successfully logged out'}), 200
 
 
 @auth_bp.route('/login', methods=['POST'])

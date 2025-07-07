@@ -18,8 +18,9 @@ def handle_options_request():
         return response
 
 
-@admin_required
+
 @admin_bp.route('/users/batch', methods=['POST'])
+@admin_required
 def create_users_batch():
     try:
 
@@ -78,7 +79,7 @@ def get_users():
         'role': user.role,
         'is_active': user.is_active,
         'refresh_token': user.refresh_token
-    } for user in users])
+    } for user in users]), 200
 
 
 @admin_bp.route('/users', methods=['POST'])
@@ -135,7 +136,7 @@ def update_user(user_id):
     except IntegrityError as e:
         db.session.rollback()
         return jsonify({'error': f'{str(e)}'}), 400
-    return jsonify({'message': 'User updated successfully'})
+    return jsonify({'message': 'User updated successfully'}), 200
 
 
 @admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
@@ -144,4 +145,4 @@ def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'message': 'User deleted successfully'})
+    return jsonify({'message': 'User deleted successfully'}), 200

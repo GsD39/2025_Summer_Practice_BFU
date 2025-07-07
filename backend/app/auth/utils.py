@@ -106,12 +106,16 @@ def invalidate_all_tokens(user):
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
+            
         token = request.headers.get('Authorization')
         if not token:
             return jsonify({'error': 'Token is missing'}), 401
 
         try:
-            payload = validate_token(token.split()[1])
+            token = token.split()[1] 
+            payload = validate_token(token)
             if payload['type'] != 'access':
                 return jsonify({'error': 'Access token required'}), 403
             g.user_id = payload['sub']
@@ -119,5 +123,4 @@ def token_required(f):
             return jsonify({'error': str(e)}), 401
 
         return f(*args, **kwargs)
-
     return decorated

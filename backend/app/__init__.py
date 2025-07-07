@@ -23,7 +23,8 @@ def create_app() -> Flask:
             "origins": ORIGIN,
             "allow_headers": ["Authorization", "Content-Type"],
             "methods": ["GET", "POST", "PUT", "DELETE"],
-            "supports_credentials": True
+            "supports_credentials": True,
+            "max_age": 3600
         }
     })
 
