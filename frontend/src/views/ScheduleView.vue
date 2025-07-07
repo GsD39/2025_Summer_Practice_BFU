@@ -12,17 +12,11 @@
     
     <ScheduleTable v-else :schedule="schedule" />
     
-    <div v-if="isAdmin" class="admin-controls">
+    <!-- <div v-if="isAdmin" class="admin-controls">
       <button @click="showLectureForm = true">
         <i class="fas fa-plus"></i> Add Lecture
       </button>
-    </div>
-    
-    <LectureForm 
-      v-if="showLectureForm"
-      @close="showLectureForm = false"
-      @save="handleSaveLecture"
-    />
+    </div> -->
   </div>
 </template>
 
@@ -30,10 +24,9 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 import ScheduleFilter from '@/components/schedule/ScheduleFilter.vue'
 import ScheduleTable from '@/components/schedule/ScheduleTable.vue'
-import LectureForm from '@/components/admin/LectureForm.vue'
 
 export default {
-  components: { ScheduleFilter, ScheduleTable, LectureForm },
+  components: { ScheduleFilter, ScheduleTable },
   data() {
     return {
       filter: {
@@ -41,7 +34,6 @@ export default {
         value: '',
         date: null
       },
-      showLectureForm: false
     }
   },
   computed: {

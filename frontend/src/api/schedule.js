@@ -12,14 +12,15 @@ export default {
   },
   
   createLecture(lectureData) {
-    console.log("createLecture", lectureData, axios.post('/schedule/', lectureData));
+    console.log("Sending lection creation request:", lectureData);
+    console.log(axios.post('/schedule/', lectureData))
     return axios.post('/schedule/', lectureData)
   },
   createLecturesBatch(lectures) {
     return axios.post('/schedule/batch', lectures)
   },
   getAllLectures() {
-    console.log("getAllLectures", axios.get('/schedule/admin/all'));
+    console.log("Sending getting all lectures request", axios.get('/schedule/admin/all'));
     return axios.get('/schedule/admin/all')
   },
   deleteLecture(lectureId) {

@@ -63,11 +63,6 @@ router.beforeEach(async (to, from, next) => {
   
   const { isAuthenticated, isAdmin } = getAuthStatus()
   
-  console.log('[Router] Navigating to:', to.name)
-  console.log('[Router] isAuthenticated:', isAuthenticated)
-  console.log('[Router] requiresAuth:', requiresAuth)
-  console.log('[Router] requiresAdmin:', requiresAdmin)
-
   if (requiresAuth && !isAuthenticated) {
     next({ name: 'Auth', query: { redirect: to.fullPath } })
   } else if (requiresAdmin && !isAdmin) {

@@ -49,7 +49,7 @@
         
         <div class="list-body">
           <div v-for="lecture in filteredLectures" :key="lecture.id" class="list-row">
-            <div class="list-item time">{{ lecture.time }}</div>
+            <div class="list-item time">{{ lecture.start_time }} - {{ lecture.end_time }}</div>
             <div class="list-item day">{{ lecture.day }}</div>
             <div class="list-item group">
               <span class="group-name">{{ lecture.group }}</span>
@@ -64,7 +64,7 @@
               <button class="edit-btn" @click="openLectureForm(lecture)">
                 <font-awesome-icon icon=" fa-edit" />
               </button>
-              <button class="delete-btn" @click="confirmDelete(lecture)">
+              <button class="delete-btn" @click="submitDeleteLecture(lecture)">
                 <font-awesome-icon icon=" fa-trash" />
               </button>
             </div>
@@ -78,7 +78,7 @@
       </div>
 
       <!-- Lecture Form Modal -->
-      <div v-if="newLecture.showLectureForm" class="modal-overlay">
+      <div v-if="showLectureForm" class="modal-overlay">
         <div class="lecture-form-modal">
           <div class="modal-header">
             <h3>{{ editingLecture ? 'Edit Lecture' : 'Add New Lecture' }}</h3>
@@ -122,12 +122,13 @@
               
               <div class="form-group">
                 <label>Time *</label>
-                <input v-model="newLecture.time" required>
-                <datalist>
+                <input v-model="newLecture.start_time" required>
+                <input v-model="newLecture.end_time" required>
+                <!-- <datalist>
                   <option v-for="timeSlot in timeSlots" :key="timeSlot" :value="timeSlot">
                     {{ timeSlot }}
                   </option>
-                </datalist>
+                </datalist> -->
               </div>
             </div>
             
@@ -200,7 +201,6 @@ export default {
     ...mapGetters('schedule', ['groups', 'subjects', 'teachers']),
     
     groups() {
-      console.log("Returning groups", this.$store.state.schedule.groups)
       return this.$store.state.schedule.groups;
     },
     teachers() {
@@ -234,7 +234,6 @@ export default {
     ]),
 
     async saveLecture() {
-      console.log(this.groups)
       const payload = {
         id: this.editingLecture?.id,
         data: {
@@ -252,10 +251,8 @@ export default {
       if (this.editingLecture) {
         await this.updateLecture(payload);
       } else {
-        console.log(payload)
         await this.createLecture(payload.data);
         this.showLectureForm = false;
-        this.filterSchedule();
       }
       this.closeLectureForm();
       await this.fetchAllLectures();
@@ -263,10 +260,6 @@ export default {
 
     async filterSchedule() {
       await this.fetchAllLectures(); // TODO
-    },
-
-    async confirmDelete() {
-      await this.submitDeleteLecture(); // TODO
     },
 
     async submitDeleteLecture(lecture) {
@@ -282,7 +275,7 @@ export default {
     openLectureForm(lecture) {
       if (lecture) {
         this.newLecture = {
-          groupId: lecture.groups,
+          group: lecture.group,
           subject: lecture.subject,
           teacher: lecture.teacher,
           day: lecture.day,
@@ -309,10 +302,10 @@ export default {
         end_time: '10:30',
         week_type: 'lower',
         room: '',
-        filterDay: '',
-        filterTeacher: '',
-        filterGroup: '',
       },
+      filterDay: '',
+      filterTeacher: '',
+      filterGroup: '',
       showLectureForm: false,
       showDeleteConfirmation: false,
       filteredLectures: [],
@@ -401,7 +394,7 @@ export default {
   
   .list-header, .list-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 2fr 1.5fr 1fr 2fr 100px;
+    grid-template-columns: 1.5fr 1fr 1.5fr 2fr 2fr 0.5fr 1.5fr 100px;
     gap: 10px;
     padding: 15px 20px;
   }

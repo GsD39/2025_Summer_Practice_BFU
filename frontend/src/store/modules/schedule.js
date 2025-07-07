@@ -94,7 +94,7 @@ export default {
       try {
         const response = await scheduleApi.getAllLectures();
 		console.log( "response data!", response.data);
-        commit('SET_LECTURES', JSON.parse(response.data));
+        commit('SET_LECTURES', response.data);
         return response.data;
       } catch (error) {
         if (error.message === "Network Error") {
