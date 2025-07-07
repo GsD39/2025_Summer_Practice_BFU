@@ -262,7 +262,7 @@ export default {
       this.userToDelete = user
     },
     
-    async submitCreateUser() {
+    async submitDeleteUser() {
       if (!this.userToDelete) return
       
       this.isDeleting = true

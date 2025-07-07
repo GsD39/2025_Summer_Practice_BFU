@@ -79,25 +79,22 @@
   </template>
   
   <script>
+  import { mapActions } from 'vuex';
+  
   export default {
-    data() {
-      return {
-        lectureData: {
-          group: '',
-          subject: '',
-          teacher: '',
-          room: '',
-          day: 'Monday',
-          start_time: '09:00',
-          end_time: '10:30',
-          week_type: 'lower'
+    methods: {
+      async handleSubmit() {
+        try {
+          await this.createLecture(this.lectureData);
+          this.$emit('close');
+        } catch (error) {
+          console.error('Lecture creation failed:', error);
         }
       }
     },
-    methods: {
-      handleSubmit() {
-        this.$emit('save', this.lectureData)
-      }
+    setup() {
+      const { createLecture } = mapActions('schedule', ['createLecture']);
+      return { createLecture };
     }
   }
   </script>

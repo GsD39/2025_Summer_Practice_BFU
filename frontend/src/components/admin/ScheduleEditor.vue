@@ -197,207 +197,96 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'ScheduleEditor',
-    data() {
-      return {
-        showLectureForm: false,
-        showDeleteConfirmation: false,
-        editingLecture: null,
-        lectureToDelete: null,
-        newGroup: '',
-        
-        filterDay: '',
-        filterTeacher: '',
-        filterGroup: '',
-        filteredLectures: [],
-        
-        formData: {
-          courseId: '',
-          teacher: '',
-          day: '',
-          time: '',
-          room: '',
-          groups: []
-        },
-        
-        // Sample data - later will come from the backend
-        lectures: [
-          {
-            id: 1,
-            course: { id: 101, code: 'CS-101', name: 'Introduction to Computer Science' },
-            teacher: 'Dr. Smith',
-            day: 'Monday',
-            time: '9:00-10:30',
-            room: 'A-205',
-            groups: ['CS-101-01', 'CS-101-02']
-          },
-          {
-            id: 2,
-            course: { id: 102, code: 'MATH-201', name: 'Linear Algebra' },
-            teacher: 'Prof. Johnson',
-            day: 'Tuesday',
-            time: '10:45-12:15',
-            room: 'B-107',
-            groups: ['MATH-201-01']
-          },
-          {
-            id: 3,
-            course: { id: 103, code: 'PHYS-101', name: 'Physics for Engineers' },
-            teacher: 'Dr. Williams',
-            day: 'Wednesday',
-            time: '13:00-14:30',
-            room: 'C-304',
-            groups: ['ENG-101-01', 'ENG-101-02', 'ENG-101-03']
-          },
-          {
-            id: 4,
-            course: { id: 104, code: 'HIST-110', name: 'World History' },
-            teacher: 'Dr. Brown',
-            day: 'Thursday',
-            time: '14:45-16:15',
-            room: 'D-112',
-            groups: ['HIST-110-01', 'HIST-110-02']
-          },
-          {
-            id: 5,
-            course: { id: 105, code: 'ENG-101', name: 'English Composition' },
-            teacher: 'Prof. Davis',
-            day: 'Friday',
-            time: '16:30-18:00',
-            room: 'E-201',
-            groups: ['ENG-101-01']
-          }
-        ],
-        
-        // Static data - later will come from the backend
-        days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        timeSlots: ['9:00-10:30', '10:45-12:15', '13:00-14:30', '14:45-16:15', '16:30-18:00'],
-        teachers: ['Dr. Smith', 'Prof. Johnson', 'Dr. Williams', 'Dr. Brown', 'Prof. Davis', 'Dr. Wilson'],
-        courses: [
-          { id: 101, code: 'CS-101', name: 'Introduction to Computer Science' },
-          { id: 102, code: 'MATH-201', name: 'Linear Algebra' },
-          { id: 103, code: 'PHYS-101', name: 'Physics for Engineers' },
-          { id: 104, code: 'HIST-110', name: 'World History' },
-          { id: 105, code: 'ENG-101', name: 'English Composition' },
-          { id: 106, code: 'CHEM-201', name: 'Organic Chemistry' },
-          { id: 107, code: 'BIO-101', name: 'Biology Fundamentals' }
-        ]
-      };
+<script>
+import { mapState, mapActions, mapGetters } from 'vuex';
+
+export default {
+  computed: {
+    ...mapState('schedule', ['isLoading', 'error']),
+    ...mapGetters('schedule', ['filteredLectures']),
+    
+    courses() {
+      return this.$store.state.schedule.courses;
     },
-    mounted() {
-      // Initialize filtered list with all lectures
-      this.filteredLectures = [...this.lectures];
-    },
-    methods: {
-      openLectureForm(lecture) {
-        this.editingLecture = lecture;
-        
-        if (lecture) {
-          // Populate form with existing lecture data
-          this.formData = {
-            courseId: lecture.course.id,
-            teacher: lecture.teacher,
-            day: lecture.day,
-            time: lecture.time,
-            room: lecture.room,
-            groups: [...lecture.groups]
-          };
-        } else {
-          // Reset form for new lecture
-          this.formData = {
-            courseId: '',
-            teacher: '',
-            day: '',
-            time: '',
-            room: '',
-            groups: []
-          };
-        }
-        
-        this.showLectureForm = true;
-      },
-      
-      closeLectureForm() {
-        this.showLectureForm = false;
-        this.editingLecture = null;
-      },
-      
-      saveLecture() {
-        if (this.editingLecture) {
-          // Update existing lecture
-          const index = this.lectures.findIndex(l => l.id === this.editingLecture.id);
-          if (index !== -1) {
-            const course = this.courses.find(c => c.id === this.formData.courseId);
-            this.lectures[index] = {
-              ...this.lectures[index],
-              course: course,
-              teacher: this.formData.teacher,
-              day: this.formData.day,
-              time: this.formData.time,
-              room: this.formData.room,
-              groups: [...this.formData.groups]
-            };
-          }
-        } else {
-          // Add new lecture
-          const course = this.courses.find(c => c.id === this.formData.courseId);
-          const newId = Math.max(...this.lectures.map(l => l.id), 0) + 1;
-          
-          this.lectures.push({
-            id: newId,
-            course: course,
-            teacher: this.formData.teacher,
-            day: this.formData.day,
-            time: this.formData.time,
-            room: this.formData.room,
-            groups: [...this.formData.groups]
-          });
-        }
-        
-        // Update filtered list
-        this.filterSchedule();
-        
-        // Close form
-        this.closeLectureForm();
-      },
-      
-      confirmDelete(lecture) {
-        this.lectureToDelete = lecture;
-        this.showDeleteConfirmation = true;
-      },
-      
-      deleteLecture() {
-        this.lectures = this.lectures.filter(l => l.id !== this.lectureToDelete.id);
-        this.filterSchedule();
-        this.showDeleteConfirmation = false;
-        this.lectureToDelete = null;
-      },
-      
-      addGroup() {
-        if (this.newGroup.trim() && !this.formData.groups.includes(this.newGroup.trim())) {
-          this.formData.groups.push(this.newGroup.trim());
-          this.newGroup = '';
-        }
-      },
-      
-      removeGroup(group) {
-        this.formData.groups = this.formData.groups.filter(g => g !== group);
-      },
-      
-      filterSchedule() {
-        this.filteredLectures = this.lectures.filter(lecture => {
-          const dayMatch = !this.filterDay || lecture.day === this.filterDay;
-          const teacherMatch = !this.filterTeacher || lecture.teacher === this.filterTeacher;
-          const courseMatch = !this.filterGroup || lecture.course.id.toString() === this.filterGroup.toString();
-          
-          return dayMatch && teacherMatch && courseMatch;
-        });
-      }
+    teachers() {
+      return this.$store.state.schedule.teachers;
     }
-  };
-  </script>
+  },
+  async mounted() {
+    await this.fetchAllLectures();
+    await this.fetchCourses();
+    await this.fetchTeachers();
+  },
+  methods: {
+    ...mapActions('schedule', [
+      'fetchAllLectures',
+      'createLecture',
+      'updateLecture',
+      'deleteLecture',
+      'fetchCourses',
+      'fetchTeachers'
+    ]),
+
+    async saveLecture() {
+      const payload = {
+        id: this.editingLecture?.id,
+        data: {
+          group: this.courses.find(c => c.id === this.formData.courseId)?.code,
+          subject: this.courses.find(c => c.id === this.formData.courseId)?.name,
+          teacher: this.formData.teacher,
+          room: this.formData.room,
+          day: this.formData.day,
+          start_time: this.formData.start_time,
+          end_time: this.formData.end_time,
+          week_type: this.formData.week_type
+        }
+      };
+
+      if (this.editingLecture) {
+        await this.updateLecture(payload);
+      } else {
+        await this.createLecture(payload.data);
+      }
+      this.closeLectureForm();
+    },
+
+    async deleteLecture(lecture) {
+      await this.deleteLecture(lecture.id);
+      this.showDeleteConfirmation = false;
+    },
+
+    openLectureForm(lecture) {
+      if (lecture) {
+        this.formData = {
+          courseId: this.courses.find(c => c.code === lecture.group)?.id,
+          teacher: lecture.teacher,
+          day: lecture.day,
+          start_time: lecture.start_time,
+          end_time: lecture.end_time,
+          week_type: lecture.week_type,
+          room: lecture.room
+        };
+      }
+      this.editingLecture = lecture;
+      this.showLectureForm = true;
+    }
+  },
+  data() {
+    return {
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      formData: {
+        courseId: '',
+        teacher: '',
+        day: 'Monday',
+        start_time: '09:00',
+        end_time: '10:30',
+        week_type: 'lower',
+        room: ''
+      },
+    }
+  }
+}
+</script>
   
   <style scoped>
   .schedule-editor {

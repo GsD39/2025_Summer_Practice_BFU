@@ -4,7 +4,6 @@ from .. import db
 from ..auth.models import User
 from ..auth.utils import admin_required
 from sqlalchemy.exc import IntegrityError
-from flask_cors import cross_origin
 
 ORIGIN = 'http://localhost:3000' #TODO
 

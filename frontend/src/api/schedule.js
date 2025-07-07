@@ -23,11 +23,13 @@ export default {
   deleteLecture(lectureId) {
     return axios.delete(`/schedule/${lectureId}`)
   },
-  
   getGroups() {
     return axios.get('/schedule/groups')
   },
   getTeachers() {
-    return axios.get('/schedule/teachers')
-  }
+    return axios.get('/schedule/teachers');
+  },
+  updateLecture(lectureId, lectureData) {
+    return axios.put(`/schedule/${lectureId}`, lectureData);
+  },
 }

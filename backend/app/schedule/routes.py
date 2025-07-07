@@ -2,17 +2,19 @@ from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime
 from .. import db
 from ..schedule.models import Schedule, WeekType
-from flask_cors import cross_origin
 from ..auth.utils import admin_required, token_required
+from flask_cors import cross_origin
 
 schedule_bp = Blueprint('schedule', __name__)
 
 ORIGIN = 'http://localhost:3000'#TODO
 
 
+@schedule_bp.after_request
 def handle_options_request():
     if request.method == 'OPTIONS':
         response = jsonify()
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
         response.headers.add('Access-Control-Allow-Headers', 'Authorization, Content-Type')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
         return response
@@ -50,6 +52,7 @@ def get_group_schedule(group_name):
 
 
 @schedule_bp.route('/teacher/<teacher_name>', methods=['GET'])
+@cross_origin()
 @token_required
 def get_teacher_schedule(teacher_name):
     date_str = request.args.get('date')
@@ -183,3 +186,32 @@ def get_all_schedule():
 
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
+    
+# @schedule_bp.route('/<int:schedule_id>', methods=['PUT'])
+# @admin_required
+# def update_schedule_item(schedule_id):
+#     item = Schedule.query.get_or_404(schedule_id)
+#     data = request.get_json()
+    
+#     try:
+#         item.group = data.get('group', item.group)
+#         item.subject = data.get('subject', item.subject)
+#         item.teacher = data.get('teacher', item.teacher)
+#         item.room = data.get('room', item.room)
+#         item.day = data.get('day', item.day).lower()
+        
+#         if 'start_time' in data:
+#             item.start_time = datetime.strptime(data['start_time'], '%H:%M').time()
+#         if 'end_time' in data:
+#             item.end_time = datetime.strptime(data['end_time'], '%H:%M').time()
+#         if 'week_type' in data:
+#             item.week_type = WeekType(data['week_type'])
+        
+#         db.session.commit()
+#         return jsonify({
+#             'message': 'Schedule item updated',
+#             'item': { /* return updated item */ }
+#         }), 200
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({'error': str(e)}), 400

@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 from flask_cors import CORS
 
+ORIGIN = 'http://localhost:3000'#TODO
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -19,7 +20,7 @@ def create_app() -> Flask:
     # Конфигурация CORS
     CORS(app, resources={
         r"/api/*": {
-            "origins": "http://localhost:3000",
+            "origins": ORIGIN,
             "allow_headers": ["Authorization", "Content-Type"],
             "methods": ["GET", "POST", "PUT", "DELETE"],
             "supports_credentials": True
