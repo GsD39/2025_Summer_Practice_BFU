@@ -3,7 +3,6 @@ from datetime import datetime
 from .. import db
 from ..schedule.models import Schedule, WeekType
 from ..auth.utils import admin_required, token_required
-from flask_cors import cross_origin
 
 schedule_bp = Blueprint('schedule', __name__)
 
@@ -23,7 +22,7 @@ def get_group_schedule(group_name):
     week_type = Schedule.get_week_type(date)
     day_of_week = date.strftime('%A').lower() if date is not None else None
 
-    query = Schedule.query.filter_by(group=group_name, week_type=week_type)
+    query = Schedule.query.filter_by(group=group_name)
 
     if day_of_week:
         query = query.filter_by(day=day_of_week.lower())
@@ -43,7 +42,6 @@ def get_group_schedule(group_name):
 
 
 @schedule_bp.route('/teacher/<teacher_name>', methods=['GET'])
-@cross_origin()
 @token_required
 def get_teacher_schedule(teacher_name):
     date_str = request.args.get('date')
@@ -55,7 +53,7 @@ def get_teacher_schedule(teacher_name):
     week_type = Schedule.get_week_type(date)
     day_of_week = date.strftime('%A').lower() if date is not None else None
 
-    query = Schedule.query.filter_by(teacher=teacher_name, week_type=week_type)
+    query = Schedule.query.filter_by(teacher=teacher_name)
 
     if day_of_week:
         query = query.filter_by(day=day_of_week)

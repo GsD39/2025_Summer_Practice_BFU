@@ -34,8 +34,6 @@ export default {
     ...mapState('schedule', ['schedule', 'groups', 'teachers', 'isLoading', 'error']),
     
     formattedSchedule() {
-      // Transform backend data into weekly schedule format
-      console.log("schedule:::", this.schedule)
       if (!this.schedule) return [];
       
       return this.schedule.map(lecture => ({

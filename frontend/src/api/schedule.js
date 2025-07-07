@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export default {
   getGroupSchedule(groupName, date = null) {
+    console.log("PRINTING FRICKEIN REQUEST I sent", groupName)
     console.log("PRINTING FRICKEIN REQUEST", axios.get(`/schedule/group/${groupName}`))
     const params = date ? { date } : {}
     if (date == null) {
