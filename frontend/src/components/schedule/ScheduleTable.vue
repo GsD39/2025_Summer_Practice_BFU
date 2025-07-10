@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       timeSlots: [
         '08:30-10:00',
         '10:10-11:40',

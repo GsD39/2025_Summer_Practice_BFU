@@ -9,12 +9,12 @@
       </div>
       
       <nav>
-        <router-link to="/schedule">Schedule</router-link>
+        <router-link v-if="isAuthenticated" to="/schedule">Schedule</router-link>
         <router-link v-if="isAdmin" to="/admin">Admin Panel</router-link>
         
         <div class="auth-actions">
           <template v-if="isAuthenticated">
-            <button @click="logout" class="logout-btn">
+            <button @click="handleLogout" class="logout-btn">
               <i class="fas fa-sign-out-alt"></i> Logout
             </button>
           </template>
