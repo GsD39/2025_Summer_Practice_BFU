@@ -3,7 +3,7 @@
     <div class="schedule-container">
       <div class="schedule-header">
         <h1>
-          <font-awesome-icon icon="fa-calendar-alt" /> University Schedule
+          <font-awesome-icon icon="fa-calendar-alt" />{{$t('schedule.title')}}
         </h1>
       </div>
       
@@ -18,14 +18,14 @@
       <div class="schedule-content">
         <div v-if="isLoading" class="loading-state">
           <font-awesome-icon icon="fa-spinner" spin size="2x" />
-          <p>Loading schedule...</p>
+          <p>{{$t('schedule.loading')}}</p>
         </div>
         
         <div v-else-if="error" class="error-state">
           <font-awesome-icon icon="fa-exclamation-triangle" size="2x" />
           <p>{{ error }}</p>
           <button @click="loadSchedule" class="retry-btn">
-            <font-awesome-icon icon="fa-redo" /> Try Again
+            <font-awesome-icon icon="fa-redo" />{{$t('schedule.try_again')}}
           </button>
         </div>
         

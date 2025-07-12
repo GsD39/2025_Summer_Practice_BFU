@@ -1,13 +1,13 @@
 <template>
   <div class="user-management">
     <div class="header">
-      <h2>User Management</h2>
+      <h2>{{ $t('admin.user_management.title') }}</h2>
       <div class="actions">
         <button class="add-btn" @click="showCreateForm = true">
-          <font-awesome-icon icon="fa-plus" /> Add User
+          <font-awesome-icon icon="fa-plus" /> {{ $t('admin.user_management.add_user') }}
         </button>
         <button class="batch-btn" @click="showBatchForm = true">
-          <font-awesome-icon icon="fa-users" /> Batch Create
+          <font-awesome-icon icon="fa-users" /> {{ $t('admin.user_management.batch_create') }}
         </button>
       </div>
     </div>
@@ -16,7 +16,7 @@
       <input 
         type="text" 
         v-model="searchQuery" 
-        placeholder="Search by email..." 
+        :placeholder="$t('admin.user_management.searchbar_placeholder')"
         @input="filterUsers"
       >
       <font-awesome-icon icon="fa-search" />
@@ -26,11 +26,11 @@
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ $t('admin.user_management.table_container.id') }}</th>
+            <th>{{ $t('admin.user_management.table_container.email') }}</th>
+            <th>{{ $t('admin.user_management.table_container.role') }}</th>
+            <th>{{ $t('admin.user_management.table_container.status') }}</th>
+            <th>{{ $t('admin.user_management.table_container.actions') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,9 +39,9 @@
             <td>{{ user.email }}</td>
             <td>
               <select v-model="user.role" @change="updateUserRole(user)">
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="admin">Admin</option>
+                <option value="student">{{ $t('admin.user_management.table_container.roles.student') }}</option>
+                <option value="teacher">{{ $t('admin.user_management.table_container.roles.teacher') }}</option>
+                <option value="admin">{{ $t('admin.user_management.table_container.roles.admin') }}</option>
               </select>
             </td>
             <td>
@@ -68,15 +68,15 @@
       
       <div v-if="filteredUsers.length === 0" class="empty-state">
         <font-awesome-icon icon="fa-user-slash" />
-        <p>No users found</p>
+        <p>{{ $t('admin.user_management.no_users_found') }}</p>
       </div>
     </div>
-
-    <!-- Create User Modal -->
+    
+    <!-- User Create Modal -->
     <div v-if="showCreateForm" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Create New User</h3>
+          <h3>{{ $t('admin.user_management.create_user_form.title') }}</h3>
           <button @click="closeCreateForm">
             <font-awesome-icon icon="fa-times" />
           </button>
@@ -84,12 +84,12 @@
         
         <form @submit.prevent="submitCreateUser">
           <div class="form-group">
-            <label>Email *</label>
+            <label>{{$t('admin.user_management.table_container.email')}} *</label>
             <input v-model="newUser.email" type="email" required>
           </div>
           
           <div class="form-group">
-            <label>Password *</label>
+            <label>{{$t('admin.user_management.table_container.password')}} *</label>
             <div class="password-input">
               <input 
                 v-model="newUser.password" 
@@ -97,24 +97,24 @@
                 required
               >
               <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
+                <font-awesome-icon :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
               </button>
             </div>
           </div>
           
           <div class="form-group">
-            <label>Role *</label>
+            <label>{{$t('admin.user_management.table_container.role')}} *</label>
             <select v-model="newUser.role" required>
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
+              <option value="student">{{ $t('admin.user_management.table_container.roles.student') }}</option>
+              <option value="teacher">{{ $t('admin.user_management.table_container.roles.teacher') }}</option>
+              <option value="admin">{{ $t('admin.user_management.table_container.roles.admin') }}</option>
             </select>
           </div>
           
           <div class="form-actions">
-            <button type="button" @click="closeCreateForm">Cancel</button>
+            <button type="button" @click="closeCreateForm">{{ $t('common.cancel') }}</button>
             <button type="submit" :disabled="isCreating">
-              {{ isCreating ? 'Creating...' : 'Create User' }}
+              {{ isCreating ? $t('admin.user_management.create_user_form.creating') : $t('admin.user_management.create_user_form.create_user') }}
             </button>
           </div>
         </form>
@@ -125,7 +125,7 @@
     <div v-if="showBatchForm" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Batch Create Users</h3>
+          <h3>{{ $t('admin.user_management.batch_create_form.title') }}</h3>
           <button @click="closeBatchForm">
             <font-awesome-icon icon="fa-times" />
           </button>
@@ -133,7 +133,7 @@
         
         <div class="modal-body">
           <div class="instructions">
-            <p>Enter user data in JSON format:</p>
+            <p>{{ $t('admin.user_management.batch_create_form.instructions') }}</p>
             <pre>[
   {
     "email": "user1@example.com",
@@ -160,9 +160,9 @@
         </div>
         
         <div class="modal-actions">
-          <button @click="closeBatchForm">Cancel</button>
+          <button @click="closeBatchForm">{{$t('common.cancel')}}</button>
           <button @click="submitCreateUsersBatch" :disabled="isBatchCreating">
-            {{ isBatchCreating ? 'Creating...' : 'Create Users' }}
+            {{ isBatchCreating ? $t('admin.user_management.batch_create_form.creating') : $t('admin.user_management.batch_create_form.create_user') }}
           </button>
         </div>
       </div>
@@ -172,16 +172,16 @@
     <div v-if="userToDelete" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Confirm Deletion</h3>
+          <h3>{{$t('admin.user_management.deletion_form.title')}}</h3>
         </div>
         
         <div class="modal-body">
-          <p>Are you sure you want to delete user <strong>{{ userToDelete.email }}</strong>?</p>
-          <p class="warning">This action cannot be undone.</p>
+          <p>{{$t('admin.user_management.deletion_form.text')}} <strong>{{ userToDelete.email }}</strong>?</p>
+          <p class="warning">{{$t('admin.user_management.deletion_form.warning')}}</p>
         </div>
         
         <div class="modal-actions">
-          <button @click="userToDelete = null">Cancel</button>
+          <button @click="userToDelete = null">{{$t('common.cancel')}}</button>
           <button @click="submitDeleteUser" class="delete-btn" :disabled="isDeleting">
             <font-awesome-icon icon="fa-trash" /> 
           </button>

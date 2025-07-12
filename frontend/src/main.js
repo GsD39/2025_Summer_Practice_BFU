@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
+import i18n from './i18n'
 import { setAuthToken } from '@/utils/auth'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -19,13 +20,13 @@ const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(store)
+app.use(i18n)
 
 const savedToken = localStorage.getItem('token')
 if (savedToken) {
   setAuthToken(savedToken)
 }
 app.use(router)
-
 
 
 app.config.errorHandler = (err, vm, info) => {
@@ -40,11 +41,7 @@ if (token) {
  }
 
 
-
-// Интерцептор запросов
 axios.interceptors.request.use(config => {
-  // Токен теперь берется из хранилища, а не из store.state
-  // так как store.state может быть еще не инициализирован
   const token = localStorage.getItem('token')
   if (token) {
 	

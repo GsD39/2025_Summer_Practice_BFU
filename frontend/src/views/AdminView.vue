@@ -1,7 +1,7 @@
 <template>
   <div class="admin-view">
     <div class="admin-container">
-      <h1 class="admin-header">Admin Panel</h1>
+      <h1 class="admin-header">{{ $t('admin.panel') }}</h1>
       
       <div class="admin-tabs">
         <button 
@@ -9,14 +9,14 @@
           :class="{ 'tab-active': activeTab === 'users' }"
           class="tab-button"
         >
-          <font-awesome-icon icon="fa-users" /> User Management
+          <font-awesome-icon icon="fa-users" /> {{ $t('admin.user_management.title') }}
         </button>
         <button 
           @click="activeTab = 'schedule'" 
           :class="{ 'tab-active': activeTab === 'schedule' }"
           class="tab-button"
         >
-          <font-awesome-icon icon="fa-calendar-alt" /> Schedule Management
+          <font-awesome-icon icon="fa-calendar-alt" /> {{ $t('admin.schedule_editor.title') }}
         </button>
       </div>
       
@@ -29,8 +29,11 @@
 </template>
 
 <script>
+
 import UserManagement from '@/components/admin/UserManagement.vue'
 import ScheduleEditor from '@/components/admin/ScheduleEditor.vue'
+
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   components: { UserManagement, ScheduleEditor },

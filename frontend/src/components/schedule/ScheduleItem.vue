@@ -24,9 +24,9 @@ export default {
   methods: {
     formatWeekType(type) {
       const types = {
-        'lower': 'Lower Week',
-        'upper': 'Upper Week',
-        'both': 'Both Weeks'
+        'lower': $t('schedule.schedule_item.lower'),
+        'upper': $t('schedule.schedule_item.lower'),
+        'both': $t('schedule.schedule_item.both')
       };
       return types[type] || type;
     }

@@ -2,14 +2,14 @@
   <div class="schedule-table">
     <div class="week-view">
       <div class="week-header">
-        <div class="header-cell time-header">Time</div>
-        <div v-for="day in days" :key="day" class="header-cell">{{ day }}</div>
+        <div class="header-cell time-header">{{$t('schedule.schedule_table.time')}}</div>
+        <div v-for="day in $t('schedule.days').values()" :key="day" class="header-cell">{{ day }}</div>
       </div>
       
       <div class="week-body">
         <div v-for="timeSlot in timeSlots" :key="timeSlot" class="time-row">
           <div class="time-cell">{{ timeSlot }}</div>
-          <div v-for="day in days" :key="`${day}-${timeSlot}`" class="day-cell">
+          <div v-for="day in $t('schedule.days').values()" :key="`${day}-${timeSlot}`" class="day-cell">
             <ScheduleItem 
               :lecture="findLecture(day, timeSlot)" 
             />
@@ -20,7 +20,7 @@
     
     <div v-if="schedule.length === 0" class="empty-schedule">
       <font-awesome-icon icon="fa-calendar-times" size="2x" />
-      <p>No schedule found for the selected criteria</p>
+      <p>{{$t('schedule.schedule_table.no_schedule_found')}}</p>
     </div>
   </div>
 </template>
@@ -35,7 +35,6 @@ export default {
   },
   data() {
     return {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       timeSlots: [
         '08:30-10:00',
         '10:10-11:40',

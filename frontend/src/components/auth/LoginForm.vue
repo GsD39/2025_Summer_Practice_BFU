@@ -1,14 +1,14 @@
 <template>
   <div class="login-form">
-    <h2>University Login</h2>
+    <h2>{{ $t('auth.login') }}</h2>
     
     <div v-if="errorMessage" class="error-message">
       <font-awesome-icon icon="fa-exclamation-circle" /> {{ errorMessage }}
     </div>
     
     <form @submit.prevent="handleLogin">
-      <div class="form-group">
-        <label>Email Address</label>
+    <div class="form-group">
+      <label>{{ $t('auth.email') }}</label>
         <div class="input-with-icon">
           <font-awesome-icon icon="fa-envelope" />
           <input 
@@ -21,7 +21,7 @@
       </div>
       
       <div class="form-group">
-        <label>Password</label>
+        <label>{{ $t('auth.password') }}</label>
         <div class="input-with-icon">
           <font-awesome-icon icon="fa-lock" />
           <input 
@@ -42,12 +42,12 @@
       
       <button type="submit" class="login-btn" :disabled="isLoading">
         <font-awesome-icon icon="fa-sign-in-alt" /> 
-        {{ isLoading ? 'Logging in...' : 'Login to System' }}
+          {{ $t('auth.submit') }}
       </button>
     </form>
     
     <div class="footer">
-      <p>Need help? Contact IT support at support@university.edu</p>
+      <p>{{ $t('auth.support') }}</p>
     </div>
   </div>
 </template>

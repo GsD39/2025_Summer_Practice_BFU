@@ -1,8 +1,8 @@
 <template>
   <div class="auth-view">
     <div class="university-header">
-      <h1>University Schedule System</h1>
-      <p>Manage your academic schedule efficiently</p>
+      <h1>{{ $t('app.title') }}</h1>
+      <p>{{ $t('app.slogan') }}</p>
     </div>
     
     <div class="auth-container">

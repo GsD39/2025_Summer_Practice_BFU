@@ -1,36 +1,39 @@
 <template>
     <div class="schedule-editor">
       <div class="editor-header">
-        <h2>Schedule manager</h2>
+        <h2>{{ $t('admin.schedule_editor.title') }}</h2>
         <button class="add-lecture-btn" @click="openLectureForm(null)">
-          <font-awesome-icon icon="fa-plus" />Add new lecture
+          <font-awesome-icon icon="fa-plus" />{{ $t('admin.schedule_editor.create_lecture_form.title') }}
+        </button>
+        <button class="batch-create-btn" @click="openBatchCreateForm(null)"> <!-- TODO Make batch creating lectures possible-->
+          <font-awesome-icon icon="fa-users" />{{ $t('admin.schedule_editor.batch_create_form.title') }}
         </button>
       </div>
   
       <div class="filters">
         <div class="filter-group">
-          <label>Filter by day:</label>
+          <label>{{ $t('admin.schedule_editor.filters.by_day') }}</label>
           <input v-model="lectures.filterDay" @change="filterSchedule" />
           <datalist>
-            <option value="">All days</option>
-            <option v-for="day in days" :key="day" :value="day">{{ day }}</option>
+            <option value="">{{$t('admin.schedule_editor.filters.all_days') }}</option>
+            <option v-for="day in $t('schedule.days').values()" :key="day" :value="day">{{ day }}</option>
           </datalist>
         </div>
         
         <div class="filter-group">
-          <label>Filter by teacher:</label>
+          <label>{{$t('admin.schedule_editor.filters.by_teacher')}}</label>
           <input v-model="lectures.filterTeacher" @change="filterSchedule" />
           <datalist>
-            <option value="">All teachers</option>
+            <option value="">{{ $t('admin.schedule_editor.filters.all_teachers') }}</option>
             <option v-for="teacher in teachers" :key="teacher" :value="teacher">{{ teacher }}</option>
           </datalist>
         </div>
         
         <div class="filter-group">
-          <label>Filter by groups:</label>
+          <label>{{$t('admin.schedule_editor.filters.by_group')}}</label>
           <input v-model="lectures.filterGroup" @change="filterSchedule" />
           <datalist>
-            <option value="">All groups</option>
+            <option value="">{{$t('admin.schedule_editor.filters.all_groups')}}</option>
             <option v-for="group in groups" :key="group" :value="group"> {{ group }}</option>
           </datalist>
         </div>
@@ -38,13 +41,13 @@
   
       <div class="schedule-list">
         <div class="list-header">
-          <div class="header-item">Time</div>
-          <div class="header-item">Day</div>
-          <div class="header-item">Group</div>
-          <div class="header-item">Subject</div>
-          <div class="header-item">Teacher</div>
-          <div class="header-item">Room</div>
-          <div class="header-item actions">Actions</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.time')}}</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.day')}}</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.group')}}</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.subject')}}</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.teacher')}}</div>
+          <div class="header-item">{{$t('admin.schedule_editor.table_container.room')}}</div>
+          <div class="header-item actions">{{$t('admin.schedule_editor.table_container.actions')}}</div>
         </div>
         
         <div class="list-body">
@@ -72,7 +75,7 @@
           
           <div v-if="filteredLectures.length === 0" class="empty-list">
             <font-awesome-icon icon=" fa-calendar-times" />
-            <p>No lectures found</p>
+            <p>{{$t('admin.schedule_editor.no_lectures_found')}}</p>
           </div>
         </div>
       </div>
@@ -81,7 +84,7 @@
       <div v-if="showLectureForm" class="modal-overlay">
         <div class="lecture-form-modal">
           <div class="modal-header">
-            <h3>{{ editingLecture ? 'Edit Lecture' : 'Add New Lecture' }}</h3>
+            <h3>{{ editingLecture ? $t('admin.schedule_editor.create_lecture_form.editing_title') : $t('admin.schedule_editor.create_lecture_form.adding_title') }}</h3>
             <button class="close-btn" @click="closeLectureForm">
               <font-awesome-icon icon=" fa-times" />
             </button>
@@ -90,7 +93,7 @@
           <form @submit.prevent="saveLecture" class="lecture-form">
             <div class="form-row">
               <div class="form-group">
-                <label>Group *</label>
+                <label>{{$t('admin.schedule_editor.table_container.group')}} *</label>
                 <input v-model="newLecture.group" required />
                 <datalist>
                   <option v-for="group in groups" :key="group" :value="group">
@@ -100,7 +103,7 @@
               </div>
               
               <div class="form-group">
-                <label>Teacher *</label>
+                <label>{{$t('admin.schedule_editor.table_container.teacher')}} *</label>
                 <input v-model="newLecture.teacher" required>
                 <datalist>
                   <option v-for="teacher in teachers" :key="teacher" :value="teacher">
@@ -112,16 +115,16 @@
             
             <div class="form-row">
               <div class="form-group">
-                <label>Day *</label>
+                <label>{{$t('admin.schedule_editor.table_container.day')}} *</label>
                 <select v-model="newLecture.day" required>
-                  <option v-for="day in days" :key="day" :value="day">
+                  <option v-for="day in $t('schedule.days')" :key="day" :value="day">
                     {{ day }}
                   </option>
                 </select>
               </div>
               
               <div class="form-group">
-                <label>Time *</label>
+                <label>{{$t('admin.schedule_editor.table_container.time')}} *</label>
                 <input v-model="newLecture.start_time" required>
                 <input v-model="newLecture.end_time" required>
                 <!-- <datalist>
@@ -134,12 +137,12 @@
             
             <div class="form-row">
               <div class="form-group">
-                <label>Room *</label>
+                <label>{{$t('admin.schedule_editor.table_container.room')}} *</label>
                 <input type="text" v-model="newLecture.room" required>
               </div>
 
               <div class="form-group">
-                <label>Subject *</label>
+                <label>{{$t('admin.schedule_editor.table_container.subject')}} *</label>
                 <input v-model="newLecture.subject" required>
                 <datalist>
                   <option v-for="subject in subjects" :key="subject" :value="subject">
@@ -151,10 +154,10 @@
             
             <div class="form-actions">
               <button type="button" class="cancel-btn" @click="closeLectureForm">
-                Close
+                {{$t('common.close')}}
               </button>
               <button type="submit" class="save-btn">
-                {{ editingLecture ? 'Update Lecture' : 'Add Lecture' }}
+                {{ editingLecture ? $t('admin.schedule_editor.create_lecture_form.updating') : $t('admin.schedule_editor.create_lecture_form.adding') }}
               </button>
             </div>
           </form>
@@ -165,26 +168,26 @@
       <div v-if="showDeleteConfirmation" class="modal-overlay">
         <div class="confirmation-modal">
           <div class="modal-header">
-            <h3>Confirm Deletion</h3>
+            <h3>{{$t('admin.schedule_editor.deletion_form.title')}}</h3>
           </div>
           
           <div class="modal-body">
-            <p>Are you sure you want to delete this lecture?</p>
+            <p>{{$t('admin.schedule_editor.deletion_form.text')}}</p>
             <div class="lecture-preview">
-              <div><strong>Group:</strong> {{ lectureToDelete.group.code }} - {{ lectureToDelete.group.name }}</div>
-              <div><strong>Day/Time:</strong> {{ lectureToDelete.day }}, {{ lectureToDelete.time }}</div>
-              <div><strong>Teacher:</strong> {{ lectureToDelete.teacher }}</div>
-              <div><strong>Room:</strong> {{ lectureToDelete.room }}</div>
-              <div><strong>Room:</strong> {{ lectureToDelete.subject }}</div>
+              <div><strong>{{$t('admin.schedule_editor.table_container.group')}}:</strong> {{ lectureToDelete.group }}</div>
+              <div><strong>{{$t('admin.schedule_editor.table_container.day_time')}}:</strong> {{ lectureToDelete.day }}, {{ lectureToDelete.time }}</div>
+              <div><strong>{{$t('admin.schedule_editor.table_container.teacher')}}:</strong> {{ lectureToDelete.teacher }}</div>
+              <div><strong>{{$t('admin.schedule_editor.table_container.room')}}:</strong> {{ lectureToDelete.room }}</div>
+              <div><strong>{{$t('admin.schedule_editor.table_container.subject')}}:</strong> {{ lectureToDelete.subject }}</div>
             </div>
           </div>
           
           <div class="modal-actions">
             <button class="cancel-btn" @click="showDeleteConfirmation = false">
-              Close
+              {{$t('common.close')}}
             </button>
             <button class="delete-btn" @click="submitDeleteLecture">
-              Delete lecture
+              {{$t('admin.schedule_editor.deletion_form.delete_btn')}}
             </button>
           </div>
         </div>
@@ -205,7 +208,7 @@ export default {
     },
     teachers() {
       return this.$store.state.schedule.teachers;
-    }
+    },
   },
   async mounted() {
     await this.fetchAllLectures();
@@ -287,12 +290,15 @@ export default {
       }
       this.editingLecture = lecture;
       this.showLectureForm = true;
-    }
+    },
+
+    openBatchCreateForm(lecture) {
+      // TODO
+    },
   },
 
   data() {
     return {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       newLecture: {
         group: '',
         teacher: '',
@@ -316,7 +322,7 @@ export default {
   
   <style scoped>
   .schedule-editor {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -340,9 +346,7 @@ export default {
     margin: 0;
   }
   
-  .add-lecture-btn {
-    background: #3498db;
-    color: white;
+  .add-lecture-btn, .batch-create-btn {
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -353,9 +357,23 @@ export default {
     align-items: center;
     gap: 8px;
   }
-  
+
+  .add-lecture-btn {
+    background: #3498db;
+    color: white;
+  }
+
   .add-lecture-btn:hover {
     background: #2980b9;
+  }
+
+  .batch-create-btn {
+    background: #2ecc71;
+    color: white;
+  }
+
+  .batch-create-btn:hover {
+    background: #27ae60;
   }
   
   .filters {

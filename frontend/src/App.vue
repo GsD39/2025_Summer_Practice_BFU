@@ -3,25 +3,26 @@
     <header>
       <div class="logo">
         <router-link to="/">
-          <i class="fas fa-graduation-cap"></i>
-          University Schedule
+          <font-awesome-icon class="fas fa-graduation-cap" />
+          {{$t('app.title')}}
         </router-link>
       </div>
       
       <nav>
-        <router-link v-if="isAuthenticated" to="/schedule">Schedule</router-link>
-        <router-link v-if="isAdmin" to="/admin">Admin Panel</router-link>
+        <router-link v-if="isAuthenticated" to="/schedule">{{$t('app.schedule')}}</router-link>
+        <router-link v-if="isAdmin" to="/admin">{{$t('app.admin_panel')}}</router-link>
         
         <div class="auth-actions">
           <template v-if="isAuthenticated">
             <button @click="handleLogout" class="logout-btn">
-              <i class="fas fa-sign-out-alt"></i> Logout
+              <font-awesome-icon class="fas fa-sign-out-alt" /> {{$t('app.logout')}}
             </button>
           </template>
           <router-link v-else to="/auth" class="login-btn">
-            <i class="fas fa-sign-in-alt"></i> Login
+            <font-awesome-icon class="fas fa-sign-in-alt" /> {{$t('app.login')}}
           </router-link>
         </div>
+        <LanguageSwitcher />
       </nav>
     </header>
     
@@ -30,15 +31,19 @@
     </main>
     
     <footer>
-      <p>&copy; {{ new Date().getFullYear() }} University Schedule System</p>
+      <p>&copy; {{ new Date().getFullYear()}} University Schedule System</p>
     </footer>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 export default {
+  components: {
+    LanguageSwitcher
+  },
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'isAdmin'])
   },

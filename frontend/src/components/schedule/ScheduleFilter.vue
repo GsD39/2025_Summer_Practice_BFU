@@ -2,7 +2,7 @@
   <div class="schedule-filter">
     <div class="filter-header">
       <font-awesome-icon icon="fa-filter" />
-      <h3>Filter Schedule</h3>
+      <h3>{{$t('schedule.schedule_filter.title')}}</h3>
     </div>
     
     <div class="filter-controls">
@@ -17,7 +17,7 @@
               hidden
             > 
             <span class="radio-custom"></span>
-            <span class="label-text">By Group</span>
+            <span class="label-text">{{$t('schedule.schedule_filter.by_group')}}</span>
           </label>
           
           <label :class="{ active: filterType === 'teacher' }">
@@ -29,7 +29,7 @@
               hidden
             > 
             <span class="radio-custom"></span>
-            <span class="label-text">By Teacher</span>
+            <span class="label-text">{{$t('schedule.schedule_filter.by_teacher')}}</span>
           </label>
         </div>
         
@@ -42,7 +42,7 @@
               @change="handleFilterChange"
               class="styled-select"
             >
-              <option value="">Select Group</option>
+              <option value="">{{$t('schedule.schedule_filter.select_group')}}:</option>
               <option v-for="(group, index) in groups" :key="index" :value="group">
                 {{ group }}
               </option>
@@ -54,7 +54,7 @@
               @change="handleFilterChange"
               class="styled-select"
             >
-              <option value="">Select Teacher</option>
+              <option value="">{{$t('schedule.schedule_filter.select_teacher')}}:</option>
               <option v-for="(teacher, index) in teachers" :key="index" :value="teacher">
                 {{ teacher }}
               </option>
@@ -64,7 +64,7 @@
       </div>
       
       <div class="date-filter">
-        <label>Select Date:</label>
+        <label>{{$t('schedule.schedule_filter.select_date')}}:</label>
         <div class="date-input-wrapper">
           <font-awesome-icon icon="fa-calendar" class="date-icon" />
           <input 
