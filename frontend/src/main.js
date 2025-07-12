@@ -60,24 +60,22 @@ axios.interceptors.response.use(response => response, error => {
 
 
 
-router.isReady().then(async () => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    try {
-      // Устанавливаем токен СРАЗУ
-      setAuthToken(token)
+// router.isReady().then(async () => {
+//   const token = localStorage.getItem('token')
+//   if (token) {
+//     try {
+//       setAuthToken(token)
       
-      // Затем загружаем пользователя
-	  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      await store.dispatch('auth/fetchUser')
-    } catch (error) {
-      console.error('Auth initialization failed:', error)
-      setAuthToken(null)
-    }
-  }
+//   	  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+//       await store.dispatch('auth/fetchUser')
+//     } catch (error) {
+//       console.error('Auth initialization failed:', error)
+//       setAuthToken(null)
+//     }
+//   }
   
   app.mount('#app')
-})
+// })
 
 
 if (localStorage.getItem('token')) {

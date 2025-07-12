@@ -3,13 +3,13 @@
     <div class="week-view">
       <div class="week-header">
         <div class="header-cell time-header">{{$t('schedule.schedule_table.time')}}</div>
-        <div v-for="day in $t('schedule.days').values()" :key="day" class="header-cell">{{ day }}</div>
+        <div v-for="day in dayNames(null)" :key="day" class="header-cell">{{ day }}</div>
       </div>
       
       <div class="week-body">
         <div v-for="timeSlot in timeSlots" :key="timeSlot" class="time-row">
           <div class="time-cell">{{ timeSlot }}</div>
-          <div v-for="day in $t('schedule.days').values()" :key="`${day}-${timeSlot}`" class="day-cell">
+          <div v-for="day in dayNames(null)" :key="`${day}-${timeSlot}`" class="day-cell">
             <ScheduleItem 
               :lecture="findLecture(day, timeSlot)" 
             />
@@ -46,6 +46,22 @@ export default {
     }
   },
   methods: {
+    dayNames(name) {
+      const days = {
+        'monday': this.$t('schedule.days.monday'), 
+        'tuesday': this.$t('schedule.days.tuesday'), 
+        'wednesday': this.$t('schedule.days.wednesday'), 
+        'thursday': this.$t('schedule.days.thursday'), 
+        'friday': this.$t('schedule.days.friday'), 
+        'saturday': this.$t('schedule.days.saturday'), 
+        'sunday': this.$t('schedule.days.sunday')
+      };
+      if (name === null){
+        return Object.values(days);
+      }
+      return days[name];
+    },
+
     findLecture(day, timeSlot) {
       return this.schedule.find(lecture => 
         lecture.day === day && lecture.time === timeSlot

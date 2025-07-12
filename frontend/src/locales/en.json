@@ -1,140 +1,139 @@
 {
-    "app": {
-      "title": "University Schedule System",
-      "login": "login",
-      "logout": "logout",
-      "schedule": "Schedule",
-      "admin_panel": "Admin Panel",
-      "slogan": "Manage your academic schedule efficiently"
+  "app": {
+    "title": "University Schedule System",
+    "login": "login",
+    "logout": "logout",
+    "schedule": "Schedule",
+    "admin_panel": "Admin Panel",
+    "slogan": "Manage your academic schedule efficiently"
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email Address",
+    "password": "Password",
+    "submit": "Login to System",
+    "support": "Need help? Contact IT support at room 210"
+  },
+  "schedule": {
+    "title": "University Schedule",
+    "schedule_filter":{
+      "title": "Filter Schedule",
+      "by_group": "By group",
+      "by_teacher": "By teacher",
+      "select_group": "Select Group",
+      "select_teacher": "Select Teacher",
+      "select_date": "Select Date"
     },
-    "auth": {
-      "login": "Login",
-      "email": "Email Address",
-      "password": "Password",
-      "submit": "Login to System",
-      "support": "Need help? Contact IT support at room 210"
+    "loading": "Loading schedule...",
+    "try_again": "Try Again",
+    "schedule_table": {
+      "time": "Time",
+      "no_schedule_found": "No schedule found for the selected criteria"
     },
-    "schedule": {
-      "title": "University Schedule",
-      "schedule_filter":{
-        "title": "Filter Schedule",
-        "by_group": "By group",
-        "by_teacher": "By teacher",
-        "select_group": "Select Group",
-        "select_teacher": "Select Teacher",
-        "select_date": "Select Date"
-      },
-      "loading": "Loading schedule...",
-      "try_again": "Try Again",
-      "schedule_table": {
-        "time": "Time",
-        "no_schedule_found": "No schedule found for the selected criteria"
-      },
-      "schedule_item": {
-        "week_types": {
-          "upper": "Upper Week",
-          "lower": "Lower Week",
-          "both": "Both Weeks"
-        }
-      },
-      "days": {
-        "monday": "Monday",
-        "tuesday": "Tuesday",
-        "wednesday": "Wednesday",
-        "thursday": "Thursday",
-        "friday": "Friday",
-        "saturday": "Saturday",
-        "sunday": "Sunday"
+    "schedule_item": {
+      "week_types": {
+        "upper": "Upper Week",
+        "lower": "Lower Week",
+        "both": "Both Weeks"
       }
     },
-    "admin": {
-      "panel": "Admin Panel",
-      "user_management": {
-        "title": "User Management",
-        "add_user": "Add User",
-        "batch_create": "Batch Create",
-        "searchbar_placeholder": "Search by email...",
-        "table_container" :{
-            "id": "ID",
-            "email": "Email",
-            "password": "Password",
-            "role": "Role",
-            "status": "Status",
-            "actions": "Actions",
-            "roles": {
-                "student": "Student",
-                "teacher": "Teacher",
-                "admin": "Admin"
-            },
-            "status_text": {
-                "active": "Active",
-                "inactive": "Inactive"
-            }
-        },
-        "no_users_found": "No users found.",
-        "create_user_form": {
-            "title": "Create New User",
-            "creating": "Creating...",
-            "create_user": "Create User"
-        },
-        "batch_create_form": {
-            "title": "Batch Create Users",
-            "instructions": "Enter user data in JSON format:",
-            "creating": "Creating...",
-            "create_user": "Batch create User"
-        },
-        "deletion_form": {
-            "title": "Confirm Deletion",
-            "text": "Are you sure you want to delete user",
-            "warning": "This action cannot be undone."
-        }
-      },
-      "schedule_editor": {
-        "title": "Schedule manager",
-        "filters" : {
-            "by_day": "Filter by day:",
-            "all_days": "All days",
-            "by_group": "Filter by group:",
-            "all_groups": "All groups",
-            "by_teacher": "Filter by teacher:",
-            "all_teachers": "All teachers"
-        },
-        "table_container" :{
-            "time": "Time",
-            "day": "Day",
-            "group": "Group",
-            "subject": "Subject",
-            "teacher": "Teacher",
-            "room": "Room",
-            "actions": "Actions",
-            "day_time": "Day/Time"
-        },
-        "no_lectures_found": "No lectures found",
-        "create_lecture_form": {
-            "title": "Add new lecture",
-            "editing_title": "Edit Lecture",
-            "adding_title": "Edit Lecture",
-            "updating": "Update Lecture",
-            "adding": "Add Lecture"
-        },
-        "batch_create_form": {
-            "title": "Batch create lectures"
-
-        },
-        "deletion_form": {
-            "title": "Confirm Deletion",
-            "text": "Are you sure you want to delete this lecture",
-            "delete_btn": "Delete lecture"
-        }
-      }
-    },
-    "common": {
-      "save": "Save", 
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "close": "Close",
-      "loading": "Loading...",
-      "error": "Error",
-      "success": "Success"
+    "days": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
     }
+  },
+  "admin": {
+    "panel": "Admin Panel",
+    "user_management": {
+      "title": "User Management",
+      "add_user": "Add User",
+      "batch_create": "Batch Create",
+      "searchbar_placeholder": "Search by email...",
+      "table_container" :{
+          "id": "ID",
+          "email": "Email",
+          "password": "Password",
+          "role": "Role",
+          "status": "Status",
+          "actions": "Actions",
+          "roles": {
+              "student": "Student",
+              "teacher": "Teacher",
+              "admin": "Admin"
+          },
+          "status_text": {
+              "active": "Active",
+              "inactive": "Inactive"
+          }
+      },
+      "no_users_found": "No users found.",
+      "create_user_form": {
+          "title": "Create New User",
+          "creating": "Creating...",
+          "create_user": "Create User"
+      },
+      "batch_create_form": {
+          "title": "Batch Create Users",
+          "instructions": "Enter user data in JSON format:",
+          "creating": "Creating...",
+          "create_user": "Batch create User"
+      },
+      "deletion_form": {
+          "title": "Confirm Deletion",
+          "text": "Are you sure you want to delete user",
+          "warning": "This action cannot be undone."
+      }
+    },
+    "schedule_editor": {
+      "title": "Schedule manager",
+      "filters" : {
+          "by_day": "Filter by day:",
+          "all_days": "All days",
+          "by_group": "Filter by group:",
+          "all_groups": "All groups",
+          "by_teacher": "Filter by teacher:",
+          "all_teachers": "All teachers"
+      },
+      "table_container" :{
+          "time": "Time",
+          "day": "Day",
+          "group": "Group",
+          "subject": "Subject",
+          "teacher": "Teacher",
+          "room": "Room",
+          "actions": "Actions",
+          "day_time": "Day/Time"
+      },
+      "no_lectures_found": "No lectures found",
+      "create_lecture_form": {
+          "title": "Add new lecture",
+          "editing_title": "Edit Lecture",
+          "adding_title": "Edit Lecture",
+          "updating": "Update Lecture",
+          "adding": "Add Lecture"
+      },
+      "batch_create_form": {
+          "title": "Batch create lectures"
+      },
+      "deletion_form": {
+          "title": "Confirm Deletion",
+          "text": "Are you sure you want to delete this lecture",
+          "delete_btn": "Delete lecture"
+      }
+    }
+  },
+  "common": {
+    "save": "Save", 
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
   }
+}

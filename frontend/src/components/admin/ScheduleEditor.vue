@@ -16,7 +16,7 @@
           <input v-model="lectures.filterDay" @change="filterSchedule" />
           <datalist>
             <option value="">{{$t('admin.schedule_editor.filters.all_days') }}</option>
-            <option v-for="day in $t('schedule.days').values()" :key="day" :value="day">{{ day }}</option>
+            <option v-for="day in dayNames(null)" :key="day" :value="day">{{ day }}</option>
           </datalist>
         </div>
         
@@ -53,7 +53,7 @@
         <div class="list-body">
           <div v-for="lecture in filteredLectures" :key="lecture.id" class="list-row">
             <div class="list-item time">{{ lecture.start_time }} - {{ lecture.end_time }}</div>
-            <div class="list-item day">{{ lecture.day }}</div>
+            <div class="list-item day">{{ dayNames(lecture.day) }}</div>
             <div class="list-item group">
               <span class="group-name">{{ lecture.group }}</span>
             </div>
@@ -117,7 +117,7 @@
               <div class="form-group">
                 <label>{{$t('admin.schedule_editor.table_container.day')}} *</label>
                 <select v-model="newLecture.day" required>
-                  <option v-for="day in $t('schedule.days')" :key="day" :value="day">
+                  <option v-for="day in dayNames(null)" :key="day" :value="day">
                     {{ day }}
                   </option>
                 </select>
@@ -202,13 +202,6 @@ export default {
   computed: {
     ...mapState('schedule', ['isLoading', 'error', 'lectures']),
     ...mapGetters('schedule', ['groups', 'subjects', 'teachers']),
-    
-    groups() {
-      return this.$store.state.schedule.groups;
-    },
-    teachers() {
-      return this.$store.state.schedule.teachers;
-    },
   },
   async mounted() {
     await this.fetchAllLectures();
@@ -235,6 +228,22 @@ export default {
       'fetchGroups',
       'fetchTeachers'
     ]),
+    
+    dayNames(name) {
+      const days = {
+        'monday': this.$t('schedule.days.monday'), 
+        'tuesday': this.$t('schedule.days.tuesday'), 
+        'wednesday': this.$t('schedule.days.wednesday'), 
+        'thursday': this.$t('schedule.days.thursday'), 
+        'friday': this.$t('schedule.days.friday'), 
+        'saturday': this.$t('schedule.days.saturday'), 
+        'sunday': this.$t('schedule.days.sunday')
+      };
+      if (name === null){
+        return Object.values(days);
+      }
+      return days[name];
+    },
 
     async saveLecture() {
       const payload = {

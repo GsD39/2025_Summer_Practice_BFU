@@ -3,7 +3,7 @@
     <header>
       <div class="logo">
         <router-link to="/">
-          <font-awesome-icon class="fas fa-graduation-cap" />
+          <i class="fas fa-graduation-cap"></i>
           {{$t('app.title')}}
         </router-link>
       </div>
@@ -15,11 +15,11 @@
         <div class="auth-actions">
           <template v-if="isAuthenticated">
             <button @click="handleLogout" class="logout-btn">
-              <font-awesome-icon class="fas fa-sign-out-alt" /> {{$t('app.logout')}}
+              <i class="fas fa-sign-out-alt"></i> {{$t('app.logout')}}
             </button>
           </template>
           <router-link v-else to="/auth" class="login-btn">
-            <font-awesome-icon class="fas fa-sign-in-alt" /> {{$t('app.login')}}
+            <i class="fas fa-sign-in-alt"></i> {{$t('app.login')}}
           </router-link>
         </div>
         <LanguageSwitcher />
